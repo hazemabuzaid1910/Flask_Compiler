@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product Details</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        img {
+            width: 250px;
+            border-radius: 15px;
+        }
+        .box {
+            width: 400px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        a {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h1>{{ product.name }}</h1>
+
+        <img src="{{ product.image }}"/>
+
+        <h2>Price: ${{ product.price }}</h2>
+
+        <p>{{ product.description }}</p>
+
+        <a href="/">Back to products</a>
+
+    </div>
+
+</body>
+
+</html>

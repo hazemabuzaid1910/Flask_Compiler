@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Product</title>
+</head>
+
+<body style="font-family: Arial; text-align:center;">
+
+    <h1>Edit Product</h1>
+
+    <form method="POST">
+        <input name="name" value="{{ product.name }}"/><br/>
+        <input name="price" value="{{ product.price }}"/><br/>
+        <input name="image" value="{{ product.image }}"/><br/>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <br/>
+    <a href="/">Back</a>
+
+</body>
+
+</html>

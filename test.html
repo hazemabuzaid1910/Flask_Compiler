@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Products</title>
+</head>
+
+<body style="font-family: Arial; text-align:center;">
+
+<h1>Products List</h1>
+
+<a href="/add">➕ Add New Product</a>
+<hr> {% for product in products %}
+<div style="border:1px solid gray; width:300px; margin:20px auto; padding:10px;">
+
+    <img src="{{ product.image }}" width="200">
+
+    <h3>{{ product.name }}</h3>
+    <p>${{ product.price }}</p>
+
+    <a href="/edit/{{ product.id }}">✏️ Edit</a> |
+    <a href="/delete/{{ product.id }}">🗑 Delete</a>
+
+</div>
+{% endfor %}
+
+</body>
+
+</html>
