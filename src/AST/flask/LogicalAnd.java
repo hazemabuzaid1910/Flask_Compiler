@@ -19,8 +19,8 @@ public class LogicalAnd {
 
     @Override
     public String toString() {
-        return "LogicalAnd{" +
-                "additives=" + additives +
-                '}';
+        return "LogicalAnd{\n\t\t" +
+             additives +
+                "\n\t\t"+'}';
     }
 }

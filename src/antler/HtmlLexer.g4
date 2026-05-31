@@ -23,6 +23,7 @@ LBRACE : '{' ;
 RBRACE : '}' ;
 COLON  : ':';
 SEMICOLON  : ';';
+LBRACE_Q :'"';
 
 // الرموز النصية والخاصة داخل المحتوى
 DOT    : '.' ;

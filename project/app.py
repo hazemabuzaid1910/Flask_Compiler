@@ -4,7 +4,7 @@ import json
 app = Flask(__name__)
 
 DATA_FILE = "products.json"
-product_array=[
+products_array=[
   {
     "id": 1,
     "name": "LAptop",
@@ -24,7 +24,6 @@ product_array=[
     "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAMAAzAMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAACAQMEBQYABwj/xABFEAABAwIEAwQFCQUGBwEAAAABAAIDBBEFEiExQVFhBhMicQcUMoGRIzNCYoKhscHRFUNScpIWNESDsuFTVHOTovDxJP/EABoBAAMBAQEBAAAAAAAAAAAAAAABAgMEBQb/xAAlEQACAgEDBAIDAQAAAAAAAAAAAQIRAxIhMQQTQVEiMhRhcUL/2gAMAwEAAhEDEQA/AL/uwSAN1FjqKWepkpop43VEWskTTq0cCR7x8VLbI2yymBPa/tvjT+JaB8MoX0kpU0eHCKkn+jRvhTTojw3U52osgyKyeSEY3W1SZLKdkQliQEOyQhSXRpstsgYw5qQBOkIEmAK66JIgBL2XXuuKRAClIFxKS6QHFClJXIARLZcEqYDZagLVIGqQhKgIpCAqSQmnNUtDGVyNzU3sgC6bINLmyy/ZsNf2pxiYi7mkgH7Q/RaEOtYrN9lHXxjFn85Hf6ilP7xHj+sjYB6IOTLXJSVoQP513eKPmS5kDH8wO6AlpKjvmYzVz2jzKZNfTjaYE8mi6Voe7Jha12gTbolDOJsBysjkdx9m34oH4k8Nc4QnQcXBGpBTJZZYoSLKJ67UuaHBsTbjqU0Z6gvyuqABlv4WWS1IKZNOiS6r333fUPPLxAKMx1O2Md7Lc/WkP6qXMekuS5oG4+KadUQN9qWP4hU8lVh+WzHQl1xfQEjVG/FqGK9pCABsGqXkXspY36LF1XTDZ+Y9GkpPW2/Ri"
   }
 ]
-
 # تحميل المنتجات من JSON
 def load_products():
     with open(DATA_FILE, "r") as file:
@@ -48,7 +47,7 @@ def home():
 @app.route("/add", methods=["GET", "POST"])
 def add_product():
     if request.method == "POST":
-        products = product_array
+        products = load_products()
 
         new_product = {
             "id": len(products) + 1,
@@ -68,7 +67,7 @@ def add_product():
 # حذف منتج
 @app.route("/delete/<int:product_id>")
 def delete_product(product_id):
-    products = product_array
+    products = load_products()
 
     products = [p for p in products if p["id"] != product_id]
 
@@ -79,7 +78,7 @@ def delete_product(product_id):
 # تعديل منتج
 @app.route("/edit/<int:product_id>", methods=["GET", "POST"])
 def edit_product(product_id):
-    products = product_array
+    products = products_array
 
     product = None
     for p in products:
@@ -90,11 +89,13 @@ def edit_product(product_id):
         product["name"] = request.form["name"]
         product["price"] = request.form["price"]
         product["image"] = request.form["image"]
-
-        save_products()
+        save_products(products)
         return redirect("/")
+
     return render_template("edit.html", product=product)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+

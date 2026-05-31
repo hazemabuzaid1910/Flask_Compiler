@@ -32,7 +32,7 @@ public class Comparison {
         sb.append("Comparison{");
 
         if (first != null)
-            sb.append("\n  first=").append(first);
+            sb.append("\n\t\t  first=").append(first);
 
         if (operators != null && !operators.isEmpty())
             sb.append("\n  operators=").append(operators);
@@ -40,7 +40,7 @@ public class Comparison {
         if (rest != null && !rest.isEmpty())
             sb.append("\n  rest=").append(rest);
 
-        sb.append("\n}");
+        sb.append("\n\t\t}");
         return sb.toString();
     }
 }

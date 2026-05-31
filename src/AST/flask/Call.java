@@ -14,8 +14,7 @@ public class Call implements Postfix {
 
     @Override
     public String toString() {
-        return "Call{" +
-                "argumentList=" + argumentList +
+        return "Call{"  + argumentList +
                 '}';
     }
 }

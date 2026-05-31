@@ -27,9 +27,9 @@ public class AssignmentStatement {
 
     @Override
     public String toString() {
-        return "AssignmentStatement{" +
-                "primary=" + primary +
+        return "AssignmentStatement{\n\t\t" +
+                  primary +
                 ", expression=" + expression +
-                '}';
+               "\n\t\t"+ '}';
     }
 }

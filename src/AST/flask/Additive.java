@@ -32,7 +32,7 @@ List<String> operator;
         StringBuilder sb = new StringBuilder("Additive{");
 
         if (multiplicatives != null && !multiplicatives.isEmpty()) {
-            sb.append("multiplicatives=").append(multiplicatives);
+            sb.append(multiplicatives);
         }
 
         if (operator != null && !operator.isEmpty()) {

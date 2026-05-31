@@ -14,8 +14,8 @@ public class StmtAssign implements Statement {
 
     @Override
     public String toString() {
-        return "StmtAssign{" +
-                "assignmentStatement=" + assignmentStatement +
-                '}';
+        return
+                "\n\t\t" + assignmentStatement +
+                '\n';
     }
 }

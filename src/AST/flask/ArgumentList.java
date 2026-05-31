@@ -20,10 +20,10 @@ public class ArgumentList {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ArgumentList{\n");
+        sb.append("ArgumentList{\n\t\t");
 
         if (arguments != null && !arguments.isEmpty()) {
-            sb.append("  arguments=[\n");
+            sb.append("  arguments=[\n\t\t");
             for (Object arg : arguments) {
                 sb.append("    ").append(arg).append("\n");
             }

@@ -18,7 +18,7 @@ public class Unary {
     @Override
     public String toString() {
         return "Unary{" +
-                "primary=" + primary +
+                 primary +
                 '}';
     }
 }

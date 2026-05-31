@@ -1,5 +1,5 @@
 package AST.flask;
 
 public enum LiteralType {
-    STRING,NUMBER, NONE, TRUE, FALSE
+    STRING,NUMBER, NONE, TRUE, FALSE,ARRAY,OBJECT
 }

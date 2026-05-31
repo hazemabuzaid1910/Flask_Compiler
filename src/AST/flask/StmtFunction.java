@@ -20,7 +20,7 @@ public class StmtFunction implements Statement{
         if (functionDef == null) {
             return "StmtFunction{}";
         }
-        return "StmtFunction{\n  " + functionDef + "\n}";
+        return "\n  " + functionDef + "\n";
     }
 
 }

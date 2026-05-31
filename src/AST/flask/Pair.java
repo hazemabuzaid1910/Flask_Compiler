@@ -27,7 +27,7 @@ public class Pair {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Pair{");
+        sb.append("\n\t\tPair{");
 
         if (key != null) {
             sb.append("key='").append(key).append('\'');

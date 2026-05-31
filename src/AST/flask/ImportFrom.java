@@ -33,18 +33,18 @@ public class ImportFrom implements  ImportStatement{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ImportFrom{");
+        sb.append("ImportFrom{\n");
 
         if (dottedName != null) {
-            sb.append("dottedName=").append(dottedName);
+            sb.append("\t\t").append(dottedName);
         }
 
         if (importAliases != null && !importAliases.isEmpty()) {
             if (sb.length() > "ImportFrom{".length()) sb.append(", ");
-            sb.append("importAliases=").append(importAliases);
+            sb.append("\n\t\t").append(importAliases);
         }
 
-        sb.append("}");
+        sb.append("\n\t\t}");
         return sb.toString();
     }
 

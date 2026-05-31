@@ -18,13 +18,12 @@ Comparison comparison;
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Expression{");
+
 
         if (comparison != null) {
-            sb.append("comparison=").append(comparison);
+            sb.append(comparison);
         }
 
-        sb.append("}");
         return sb.toString();
     }
 

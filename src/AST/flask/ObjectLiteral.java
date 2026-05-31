@@ -20,7 +20,7 @@ public class ObjectLiteral implements Atom{
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ObjectLiteral{");
+        sb.append("ObjectLiteral{\n\t\t");
 
         if (pairList != null && !pairList.isEmpty()) {
             sb.append("pairList=").append(pairList);

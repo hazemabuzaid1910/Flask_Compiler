@@ -16,7 +16,6 @@ import java.util.List;
 public class Main {
     public static List<Symantic_Error> errors = new ArrayList<>();
     public static check_Symantic_Error semanticError = new check_Symantic_Error();
-    private final E2_symbolTable funStack = new E2_symbolTable();
 
     public static boolean first = true;
   public static int id_element=0;

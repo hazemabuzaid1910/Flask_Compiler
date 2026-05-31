@@ -32,18 +32,18 @@ public class ImportSimple implements ImportStatement {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("ImportSimple{");
+        sb.append("ImportSimple{\n");
 
         if (importKeyword != null) {
-            sb.append("_import='").append(importKeyword).append("'");
+            sb.append("\t\t_import='").append(importKeyword).append("'");
         }
 
         if (importAliases != null && !importAliases.isEmpty()) {
             if (sb.length() > "ImportSimple{".length()) sb.append(", ");
-            sb.append("importAliases=").append(importAliases);
+            sb.append("\n\t\timportAliases=").append(importAliases);
         }
 
-        sb.append("}");
+        sb.append("\n\t\t}");
         return sb.toString();
     }
 

@@ -10,7 +10,8 @@
     <h1>Products List</h1>
 
     <a href="/add">Add New Product</a>
-    <hr/> {% for product in products %}
+    <hr/>
+    {% for product in products %}
     <div style="border:1px; width:300px; margin:20px auto; padding:10px;">
 
         <img src="{{ product.image }}" width="200"/>

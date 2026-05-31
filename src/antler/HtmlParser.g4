@@ -25,7 +25,7 @@ tagName:IDENTIFIER
 htmlAttribute: attributeKey '=' attributeValue;
 
 attributeKey:IDENTIFIER;
-attributeValue:STRING | IDENTIFIER | NUMBER;
+attributeValue:STRING | IDENTIFIER | NUMBER|;
 
 htmlContent : htmlElement        #ElementHtml
             | jinjaStatement     #StatementJinja

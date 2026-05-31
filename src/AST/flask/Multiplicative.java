@@ -32,7 +32,7 @@ public class Multiplicative {
         StringBuilder sb = new StringBuilder("Multiplicative{");
 
         if (unaryList != null && !unaryList.isEmpty()) {
-            sb.append("unaryList=").append(unaryList);
+            sb.append(unaryList);
         }
 
         if (operator != null && !operator.isEmpty()) {

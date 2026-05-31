@@ -9,6 +9,7 @@ import antler.HtmlParserBaseVisitor;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import javax.swing.text.html.HTML;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +111,14 @@ public class htmlVisitor extends HtmlParserBaseVisitor {
 
     @Override
     public HtmlContent visitExpressionJinja(HtmlParser.ExpressionJinjaContext ctx) {
-        return (HtmlContent) visitJinjaExpression(ctx.jinjaExpression());
+        JinjaExpression jinjaExpression=visitJinjaExpression(ctx.jinjaExpression());
+        return  new ExpressionJinja(jinjaExpression);
+    }
+
+    @Override
+    public JinjaExpression visitJinjaExpression(HtmlParser.JinjaExpressionContext ctx) {
+      DottedName dottedName=visitDottedName(ctx.dottedName());
+      return new JinjaExpression(dottedName);
     }
 
     @Override
@@ -121,22 +129,51 @@ public class htmlVisitor extends HtmlParserBaseVisitor {
                 .stream()
                 .map(id -> id.getText())
                 .toList();
+        String fullPath = ctx.getStart()
+                .getTokenSource()
+                .getSourceName();
+
+        String fileName = Paths.get(fullPath)
+                .getFileName()
+                .toString();
+        boolean exists = Main.semanticError.getE4().exists_E4(first);
+
+        if (exists) {
+            // المتغير معرف مسبقاً → لازم نعمل check_E4 (إذا بدك error checking)
+            Main.semanticError.getE4().check_E4(first, ctx.getStart().getLine());
+        } else {
+            // غير معرف → يعتبر Flask variable
+            Main.semanticError.getE5().addRequired(fileName, first);
+        }
+
         return new DottedName(first,rest);
     }
 
     @Override
     public JinjaStatement visitForStatement(HtmlParser.ForStatementContext ctx) {
-        return (JinjaStatement) visitForBlock(ctx.forBlock());
+        return  visitForBlock(ctx.forBlock());
     }
 
     @Override
     public ForBlock visitForBlock(HtmlParser.ForBlockContext ctx) {
-        String loopVariable= ctx.getText();
-        String iterableName=ctx.getText();
+        Main.semanticError.getE4().insert();
+        String loopVariable= ctx.IDENTIFIER(0).getText();
+        String iterableName=ctx.IDENTIFIER(1).getText();
+        Main.semanticError.getE4().add(loopVariable, "loop");
+
         List<HtmlContent> htmlContents=new ArrayList<>();
         for (HtmlParser.HtmlContentContext htmlContentContext:ctx.htmlContent()){
             htmlContents.add((HtmlContent) visit(htmlContentContext));
         }
+        String fullPath = ctx.getStart()
+                .getTokenSource()
+                .getSourceName();
+
+        String fileName = Paths.get(fullPath)
+                .getFileName()
+                .toString();
+        Main.semanticError.getE5().addRequired(fileName, iterableName);
+        Main.semanticError.getE4().get();
         return new ForBlock(loopVariable,iterableName,htmlContents);
     }
 
@@ -211,6 +248,7 @@ public class htmlVisitor extends HtmlParserBaseVisitor {
     @Override
     public HtmlAttribute visitHtmlAttribute(HtmlParser.HtmlAttributeContext ctx) {
         AttributeValue attributeValue=visitAttributeValue(ctx.attributeValue());
+
         AttributeKey attributeKey=visitAttributeKey(ctx.attributeKey());
         return new HtmlAttribute(attributeKey,attributeValue);
     }
@@ -222,31 +260,60 @@ public class htmlVisitor extends HtmlParserBaseVisitor {
     }
 
 
-        @Override
-        public AttributeValue visitAttributeValue(HtmlParser.AttributeValueContext ctx) {
-            String rawValue = ctx.getText();
-            AttributeValue.ValueType type;
+    @Override
+    public AttributeValue visitAttributeValue(HtmlParser.AttributeValueContext ctx) {
 
-            if (ctx.STRING() != null) {
-                type = AttributeValue.ValueType.STRING;
-             rawValue = rawValue.substring(1, rawValue.length() - 1);
-            } else if (ctx.NUMBER() != null) {
-                type = AttributeValue.ValueType.NUMBER;
-            } else {
-                type = AttributeValue.ValueType.IDENTIFIER;
+        String rawValue = ctx.getText();
+
+        // 🔥 الحالة المهمة: يحتوي Jinja expression
+        if (rawValue.contains("{{") && rawValue.contains("}}")) {
+
+            // استخرج أول identifier داخل Jinja
+            String inside = rawValue.substring(
+                    rawValue.indexOf("{{") + 2,
+                    rawValue.indexOf("}}")
+            ).trim();
+
+            // parse first identifier فقط (product)
+            String first = inside.split("\\.")[0];
+
+            boolean exists = Main.semanticError.getE4().exists_E4(first);
+
+            if (!exists) {
+                String fileName = ctx.start.getTokenSource().getSourceName();
+                fileName = java.nio.file.Paths.get(fileName).getFileName().toString();
+
+                Main.semanticError.getE5().addRequired(fileName, first);
             }
 
-            AttributeValue attrValue = new AttributeValue(rawValue);
-            try {
-                java.lang.reflect.Field field = AttributeValue.class.getDeclaredField("type");
-                field.setAccessible(true);
-                field.set(attrValue, type);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-            return attrValue;
+            // نرجع attribute يحتوي raw Jinja
+            return new AttributeValue(rawValue);
         }
+
+        // الحالة العادية
+        AttributeValue.ValueType type;
+
+        if (ctx.STRING() != null) {
+            type = AttributeValue.ValueType.STRING;
+            rawValue = rawValue.substring(1, rawValue.length() - 1);
+        } else if (ctx.NUMBER() != null) {
+            type = AttributeValue.ValueType.NUMBER;
+        } else {
+            type = AttributeValue.ValueType.IDENTIFIER;
+        }
+
+        AttributeValue attrValue = new AttributeValue(rawValue);
+
+        try {
+            java.lang.reflect.Field field = AttributeValue.class.getDeclaredField("type");
+            field.setAccessible(true);
+            field.set(attrValue, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return attrValue;
+    }
 
 
     @Override
@@ -254,4 +321,5 @@ public class htmlVisitor extends HtmlParserBaseVisitor {
         String tagname=ctx.getText();
         return new TagName(tagname);
     }
+
 }

@@ -15,6 +15,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.*;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.function.Function;
 
 public class Visitor extends FlaskParserBaseVisitor {
 
@@ -24,13 +25,29 @@ public class Visitor extends FlaskParserBaseVisitor {
     private String currentArrayContext = null;
     private Stack<String> objectNameStack = new Stack<>();
 
-    private String basePath = "";
+
 
 
     @Override
     public Object visitProgram(FlaskParser.ProgramContext ctx) {
         Main.semanticError.getE2().insert();
         Main.semanticError.getE3().insert();
+        Main.semanticError.getE4().insert();
+        Main.semanticError.getE6().insert();
+        Main.semanticError
+                .getE6()
+                .addBuiltinFunction(
+                        "json.load",
+                        LiteralType.ARRAY
+                );
+
+        Main.semanticError
+                .getE6()
+                .addBuiltinFunction(
+                        "open",
+                        LiteralType.STRING
+                );
+
         List<Object> elements = new ArrayList<>();
 
         for (int i = 0; i < ctx.statement().size(); i++) {
@@ -40,6 +57,9 @@ public class Visitor extends FlaskParserBaseVisitor {
 
         Main.semanticError.getE2().get();
         Main.semanticError.getE3().get();
+        Main.semanticError.getE4().get();
+        Main.semanticError.getE6().get();
+
         return new Program(elements);
     }
 
@@ -68,11 +88,13 @@ public class Visitor extends FlaskParserBaseVisitor {
     @Override
     public ImportStatement visitImportFrom(FlaskParser.ImportFromContext ctx) {
         List<ImportAlias> aliases = new ArrayList<>();
+        DottedName dottedName = visitDottedName(ctx.dottedName());
+
         for (FlaskParser.ImportAliasContext aliasCtx : ctx.importAlias()) {
             ImportAlias importAlias = visitImportAlias(aliasCtx);
             aliases.add(importAlias);
+            Main.semanticError.getE4().add(importAlias.getName(),dottedName.getFirst());
         }
-        DottedName dottedName = visitDottedName(ctx.dottedName());
         return new ImportFrom(dottedName, aliases);
     }
 
@@ -103,6 +125,9 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     @Override
     public ReturnStatement visitReturnStatement(FlaskParser.ReturnStatementContext ctx) {
+        Main.semanticError.getE5().insert();
+        Main.semanticError.getE4().insert();
+
         Expression expression = null;
         if (ctx.expression() != null) {
             expression = visitExpression(ctx.expression());
@@ -110,10 +135,15 @@ public class Visitor extends FlaskParserBaseVisitor {
             RenderTemplateInfo renderInfo = extractRenderTemplateInfo(expression);
 
             if (renderInfo != null) {
-
                 String fullPath = resolveTemplatePath(renderInfo.templatePath);
                 String htmlContent = readHtmlFile(fullPath);
+                for (String variable : renderInfo.passedVariables.keySet()) {
 
+                    Main.semanticError.getE5().addPassed(
+                            renderInfo.templatePath,
+                            variable
+                    );
+                }
                 if (htmlContent != null && !htmlContent.isEmpty()) {
                     try {
                         // بناء AST HTML
@@ -125,8 +155,12 @@ public class Visitor extends FlaskParserBaseVisitor {
                         ParseTree tree = parser.htmlNode();
                         htmlVisitor visitor = new htmlVisitor();
                         HtmlNode htmlNode = (HtmlNode) visitor.visit(tree);
+                        if (renderInfo.passedVariables!=null){
+                            Main.semanticError.getE5().check_E5();
 
-
+                        }
+                        Main.semanticError.getE4().get();
+                        Main.semanticError.getE5().get();
                         return new ReturnStatement(expression, htmlNode, renderInfo.templatePath);
 
                     } catch (IOException e) {
@@ -141,27 +175,31 @@ public class Visitor extends FlaskParserBaseVisitor {
         return new ReturnStatement(expression);
     }
 
-    private RenderTemplateInfo extractRenderTemplateInfo(Expression expr) {
-        if (expr == null) return null;
+    private RenderTemplateInfo extractRenderTemplateInfo(
+            Expression expr
+    ) {
 
-        Comparison comparison = expr.getComparison();
-        if (comparison == null) return null;
+        return traverseExpression(expr, primary -> {
 
-        return searchForRenderTemplate(comparison);
-    }
+            Atom atom = primary.getAtom();
 
-    private RenderTemplateInfo searchForRenderTemplate(Comparison comparison) {
-        LogicalOR firstOr = comparison.getFirst();
-        if (firstOr == null) return null;
+            if (!(atom instanceof IdentifierAtom identifier)) {
+                return null;
+            }
 
-        List<LogicalAnd> orTerms = firstOr.getRest();
-        if (orTerms.isEmpty()) return null;
+            if (!"render_template".equals(identifier.getValue())) {
+                return null;
+            }
 
-        for (LogicalAnd logicalAnd : orTerms) {
-            RenderTemplateInfo result = searchInLogicalAnd(logicalAnd);
-            if (result != null) return result;
-        }
-        return null;
+            for (Postfix postfix : primary.getPostfixes()) {
+
+                if (postfix instanceof Call call) {
+                    return extractTemplatePathFromCall(call);
+                }
+            }
+
+            return null;
+        });
     }
 
     private RenderTemplateInfo searchInLogicalAnd(LogicalAnd logicalAnd) {
@@ -223,44 +261,63 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     private RenderTemplateInfo extractTemplatePathFromCall(Call call) {
         ArgumentList args = call.getArgumentList();
+
         if (args == null) return null;
 
         List<Argument> arguments = args.getArguments();
+
         if (arguments.isEmpty()) return null;
 
-        Argument firstArg = arguments.get(0);
-        if (!(firstArg instanceof ArgExpression)) return null;
+        RenderTemplateInfo info = null;
 
-        Expression argExpr = ((ArgExpression) firstArg).getExpression();
-        String templatePath = extractStringFromExpression(argExpr);
+        for (int i = 0; i < arguments.size(); i++) {
 
-        if (templatePath != null) {
-            return new RenderTemplateInfo(templatePath);
+            Argument arg = arguments.get(i);
+
+            // أول argument = اسم الملف
+            if (i == 0 && arg instanceof ArgExpression) {
+
+                Expression expr = ((ArgExpression) arg).getExpression();
+
+                String templatePath = extractStringFromExpression(expr);
+
+                if (templatePath != null) {
+                    info = new RenderTemplateInfo(templatePath);
+                }
+            }
+
+            // باقي arguments = variables
+            else if (arg instanceof ArgAssignment && info != null) {
+
+                ArgAssignment assign = (ArgAssignment) arg;
+
+                String variableName = assign.getIdentifier();
+
+                String variableValue =
+                        extractIdentifierFromExpression(assign.getExpression());
+
+                info.addVariable(variableName, variableValue);
+            }
         }
 
-        return null;
+        return info;
     }
 
     private String extractStringFromExpression(Expression expr) {
-        if (expr == null) return null;
 
-        Comparison comparison = expr.getComparison();
-        if (comparison == null) return null;
+        return traverseExpression(expr, primary -> {
 
-        LogicalOR firstOr = comparison.getFirst();
-        if (firstOr == null) return null;
+            Atom atom = primary.getAtom();
 
-        List<LogicalAnd> orTerms = firstOr.getRest();
-        if (orTerms.isEmpty()) return null;
+            if (atom instanceof Literal literal &&
+                    literal.getType() == LiteralType.STRING) {
 
-        for (LogicalAnd logicalAnd : orTerms) {
-            String result = extractStringFromLogicalAnd(logicalAnd);
-            if (result != null) return result;
-        }
+                return (String) literal.getValue();
+            }
 
-        return null;
+            return null;
+        });
     }
-
     private String extractStringFromLogicalAnd(LogicalAnd logicalAnd) {
         List<Additive> additives = logicalAnd.getAdditives();
         if (additives == null || additives.isEmpty()) return null;
@@ -352,6 +409,10 @@ public class Visitor extends FlaskParserBaseVisitor {
         Expression expression = visitExpression(ctx.expression());
 
         String arrayName = extractArrayNameFromExpression(expression);
+
+        Main.semanticError.getE4().add(loopVariable,arrayName);
+        Main.semanticError.getE4().check_E4(arrayName,ctx.getStart().getLine());
+
         if (arrayName != null) {
             String elementName = arrayName + "_element";
 
@@ -390,38 +451,90 @@ public class Visitor extends FlaskParserBaseVisitor {
         return new ForStatement(loopVariable, expression, block);
     }
     private String extractArrayNameFromExpression(Expression expr) {
+
         if (expr == null) return null;
+
         Comparison comparison = expr.getComparison();
         if (comparison == null) return null;
-        LogicalOR firstOr = comparison.getFirst();
-        if (firstOr == null) return null;
-        List<LogicalAnd> orTerms = firstOr.getRest();
-        if (orTerms == null || orTerms.isEmpty()) return null;
 
-        for (LogicalAnd logicalAnd : orTerms) {
-            List<Additive> additives = logicalAnd.getAdditives();
-            if (additives != null) {
-                for (Additive additive : additives) {
-                    List<Multiplicative> multiplicatives = additive.getMultiplicatives();
-                    if (multiplicatives != null) {
-                        for (Multiplicative multi : multiplicatives) {
-                            List<Unary> unaries = multi.getUnaryList();
-                            if (unaries != null) {
-                                for (Unary unary : unaries) {
-                                    Primary primary = unary.getPrimary();
-                                    if (primary != null && primary.getAtom() instanceof IdentifierAtom) {
-                                        return ((IdentifierAtom) primary.getAtom()).getValue();
-                                    }
-                                }
-                            }
-                        }
+        LogicalOR logicalOR = comparison.getFirst();
+        if (logicalOR == null) return null;
+
+        // ===== افحص first =====
+        String result =
+                extractArrayNameFromLogicalAnd(
+                        logicalOR.getFirst()
+                );
+
+        if (result != null) {
+            return result;
+        }
+
+        // ===== افحص rest =====
+        for (LogicalAnd logicalAnd : logicalOR.getRest()) {
+
+            result =
+                    extractArrayNameFromLogicalAnd(
+                            logicalAnd
+                    );
+
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+    private String extractArrayNameFromLogicalAnd(
+            LogicalAnd logicalAnd
+    ) {
+
+        if (logicalAnd == null) {
+            return null;
+        }
+
+        List<Additive> additives =
+                logicalAnd.getAdditives();
+
+        if (additives == null) {
+            return null;
+        }
+
+        for (Additive additive : additives) {
+
+            List<Multiplicative> multiplicatives =
+                    additive.getMultiplicatives();
+
+            if (multiplicatives == null) {
+                continue;
+            }
+
+            for (Multiplicative multi : multiplicatives) {
+
+                List<Unary> unaries =
+                        multi.getUnaryList();
+
+                if (unaries == null) {
+                    continue;
+                }
+
+                for (Unary unary : unaries) {
+
+                    Primary primary =
+                            unary.getPrimary();
+
+                    if (primary != null &&
+                            primary.getAtom()
+                                    instanceof IdentifierAtom identifier) {
+
+                        return identifier.getValue();
                     }
                 }
             }
         }
+
         return null;
     }
-
     @Override
     public Statement visitStmtWith(FlaskParser.StmtWithContext ctx) {
         return visitWithStatement(ctx.withStatement());
@@ -460,13 +573,17 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     @Override
     public Statement visitStmtDecorator(FlaskParser.StmtDecoratorContext ctx) {
+
         return new StmtDecorator(visitDecoratedFunction(ctx.decoratedFunction()));
+
     }
 
     @Override
     public DecoratorStatement visitDecoratedFunction(FlaskParser.DecoratedFunctionContext ctx) {
+        Main.semanticError.getE4().insert();
         Decorator decorator = visitDecorator(ctx.decorator());
         FunctionDef functionDef = visitFunctionDef(ctx.functionDef());
+        Main.semanticError.getE4().get();
         return new DecoratorStatement(decorator, functionDef);
     }
 
@@ -498,15 +615,17 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     @Override
     public FunctionDef visitFunctionDef(FlaskParser.FunctionDefContext ctx) {
+
         String fuctionName = ctx.IDENTIFIER().getText();
         Main.semanticError.getE2().check_E2(ctx.IDENTIFIER().getText() , ctx.getStart().getLine());
-
+        Main.semanticError.getE4().add(fuctionName,"");
+        Main.semanticError.getE4().insert();
         Block block = visitBlock(ctx.block());
         if (ctx.parameterList() == null) {
             return new FunctionDef(fuctionName, null, block);
         }
         ParameterList parameterList = visitParameterList(ctx.parameterList());
-
+        Main.semanticError.getE4().get();
         return new FunctionDef(fuctionName, parameterList, block);
     }
 
@@ -569,11 +688,19 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     @Override
     public LogicalOR visitLogicalOr(FlaskParser.LogicalOrContext ctx) {
-        List<LogicalAnd> terms = new ArrayList<>();
-        for (int i = 0; i < ctx.logicalAnd().size(); i++) {
-            terms.add(visitLogicalAnd(ctx.logicalAnd(i)));
+
+        LogicalAnd first =
+                visitLogicalAnd(ctx.logicalAnd(0));
+
+        List<LogicalAnd> rest = new ArrayList<>();
+
+        for (int i = 1; i < ctx.logicalAnd().size(); i++) {
+            rest.add(
+                    visitLogicalAnd(ctx.logicalAnd(i))
+            );
         }
-        return new LogicalOR(terms);
+
+        return new LogicalOR(first, rest);
     }
 
     @Override
@@ -587,21 +714,49 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     @Override
     public Additive visitAdditive(FlaskParser.AdditiveContext ctx) {
+
         ArrayList<Multiplicative> multiplicatives = new ArrayList<>();
         List<String> operator = new ArrayList<>();
-        for (int i = 0; i < ctx.multiplicative().size(); i++) {
-            multiplicatives.add(visitMultiplicative(ctx.multiplicative(i)));
-            if (i < ctx.multiplicative().size() - 1) {
-                if (ctx.MINUS(i) != null) {
-                    operator.add(ctx.MINUS(i).getText());
-                } else {
-                    operator.add(ctx.PLUS(i).getText());
-                }
-            }
+        List<LiteralType> types = new ArrayList<>();
+
+        // build list
+        for (FlaskParser.MultiplicativeContext multCtx : ctx.multiplicative()) {
+
+            Multiplicative mult = visitMultiplicative(multCtx);
+
+            multiplicatives.add(mult);
+
+            types.add(
+                    resolveMultiplicativeType(mult)
+            );
         }
+
+        // operators + semantic check
+        for (int i = 0; i < types.size() - 1; i++) {
+
+            String op;
+
+            if (ctx.MINUS(i) != null) {
+                op = ctx.MINUS(i).getText();
+            } else {
+                op = ctx.PLUS(i).getText();
+            }
+
+            operator.add(op);
+
+            LiteralType left = types.get(i);
+            LiteralType right = types.get(i + 1);
+
+            Main.semanticError.getE6().checkOperation(
+                    left,
+                    right,
+                    op,
+                    ctx.getStart().getLine()
+            );
+        }
+
         return new Additive(multiplicatives, operator);
     }
-
     @Override
     public Multiplicative visitMultiplicative(FlaskParser.MultiplicativeContext ctx) {
         ArrayList<Unary> unaries = new ArrayList<>();
@@ -701,6 +856,7 @@ public class Visitor extends FlaskParserBaseVisitor {
         return false;
     }
     private String extractPropertyNameFromIndex(Expression expr) {
+
         if (expr == null) {
             return null;
         }
@@ -710,18 +866,26 @@ public class Visitor extends FlaskParserBaseVisitor {
             return null;
         }
 
-        LogicalOR firstOr = comparison.getFirst();
-        if (firstOr == null) {
+        LogicalOR logicalOR = comparison.getFirst();
+        if (logicalOR == null) {
             return null;
         }
 
-        List<LogicalAnd> orTerms = firstOr.getRest();
-        if (orTerms == null || orTerms.isEmpty()) {
-            return null;
+        // افحص first
+        String result =
+                extractStringFromLogicalAnd(
+                        logicalOR.getFirst()
+                );
+
+        if (result != null) {
+            return result;
         }
 
-        for (LogicalAnd logicalAnd : orTerms) {
-            String result = extractStringFromLogicalAnd(logicalAnd);
+        // افحص rest
+        for (LogicalAnd logicalAnd : logicalOR.getRest()) {
+
+            result = extractStringFromLogicalAnd(logicalAnd);
+
             if (result != null) {
                 return result;
             }
@@ -729,7 +893,6 @@ public class Visitor extends FlaskParserBaseVisitor {
 
         return null;
     }
-
     @Override
     public Postfix visitCall(FlaskParser.CallContext ctx) {
         ArgumentList argumentList = null;
@@ -753,7 +916,43 @@ public class Visitor extends FlaskParserBaseVisitor {
 
     @Override
     public AssignmentStatement visitAssignmentStatement(FlaskParser.AssignmentStatementContext ctx) {
+
         Primary left = visitPrimary(ctx.primary());
+        for (Postfix postfix : left.getPostfixes()) {
+
+            if (postfix instanceof IndexAccess indexAccess) {
+
+                String property =
+                        extractPropertyNameFromIndex(
+                                indexAccess.getIndexExpression()
+                        );
+
+                String object =
+                        extractObjectNameFromPrimary(left);
+
+                if (object != null) {
+
+                    // تحقق أن object معرف مسبقاً
+                    Main.semanticError
+                            .getE4()
+                            .check_E4(
+                                    object,
+                                    ctx.getStart().getLine()
+                            );
+                }
+
+                if (object != null && property != null) {
+
+                    Main.semanticError
+                            .getE3()
+                            .check_E3(
+                                    object,
+                                    property,
+                                    ctx.getStart().getLine()
+                            );
+                }
+            }
+        }
         String leftName = extractObjectNameFromPrimary(left);
 
         if (leftName != null) {
@@ -761,53 +960,107 @@ public class Visitor extends FlaskParserBaseVisitor {
         }
 
         Expression right = (Expression) visit(ctx.expression());
+        String rightName = extractIdentifierFromExpression(right);
+
+        // حفظ نوع المتغير
+        LiteralType exprType = resolveExpressionType(right);
+
+        if (leftName != null) {
+
+            // تسجيل المتغير في جدول E4
+            Main.semanticError.getE4().add(leftName, "");
+            // تسجيل النوع في E6
+            if (exprType != null) {
+                Main.semanticError.getE6().addVariable(
+                        leftName,
+                        exprType
+                );
+            }
+        }
+        if (leftName != null && rightName != null) {
+
+            // تحقق أن المتغير الأيمن معرف
+            Main.semanticError
+                    .getE4()
+                    .check_E4(
+                            rightName,
+                            ctx.getStart().getLine()
+                    );
+
+            // نسخ الخصائص
+            Main.semanticError
+                    .getE3()
+                    .copyProperties(
+                            rightName,
+                            leftName
+                    );
+        }
 
         if (leftName != null) {
             objectStack.pop();
         }
 
-        String rightName = extractIdentifierFromExpression(right);
-        if (leftName != null && rightName != null) {
-            E3_symbolTable e3 = Main.semanticError.getE3();
-
-            e3.copyProperties(rightName, leftName);
-
-            objectNameStack.push(leftName);
-            currentObjectName = leftName;
-        }
-
         return new AssignmentStatement(left, right);
     }
     private String extractIdentifierFromExpression(Expression expr) {
-        if (expr == null) return null;
-        Comparison comparison = expr.getComparison();
-        if (comparison == null) return null;
-        LogicalOR firstOr = comparison.getFirst();
-        if (firstOr == null) return null;
-        List<LogicalAnd> orTerms = firstOr.getRest();
-        if (orTerms == null || orTerms.isEmpty()) return null;
 
-        for (LogicalAnd logicalAnd : orTerms) {
-            List<Additive> additives = logicalAnd.getAdditives();
-            if (additives != null) {
-                for (Additive additive : additives) {
-                    List<Multiplicative> multiplicatives = additive.getMultiplicatives();
-                    if (multiplicatives != null) {
-                        for (Multiplicative multi : multiplicatives) {
-                            List<Unary> unaries = multi.getUnaryList();
-                            if (unaries != null) {
-                                for (Unary unary : unaries) {
-                                    Primary primary = unary.getPrimary();
-                                    if (primary != null && primary.getAtom() instanceof IdentifierAtom) {
-                                        return ((IdentifierAtom) primary.getAtom()).getValue();
-                                    }
-                                }
-                            }
-                        }
+        return traverseExpression(expr, primary -> {
+
+            if (primary.getAtom() instanceof IdentifierAtom identifier) {
+                return identifier.getValue();
+            }
+
+            return null;
+        });
+    }
+    private String extractIdentifierFromLogicalAnd(
+            LogicalAnd logicalAnd
+    ) {
+
+        if (logicalAnd == null) {
+            return null;
+        }
+
+        List<Additive> additives =
+                logicalAnd.getAdditives();
+
+        if (additives == null) {
+            return null;
+        }
+
+        for (Additive additive : additives) {
+
+            List<Multiplicative> multiplicatives =
+                    additive.getMultiplicatives();
+
+            if (multiplicatives == null) {
+                continue;
+            }
+
+            for (Multiplicative multi : multiplicatives) {
+
+                List<Unary> unaries =
+                        multi.getUnaryList();
+
+                if (unaries == null) {
+                    continue;
+                }
+
+                for (Unary unary : unaries) {
+
+                    Primary primary =
+                            unary.getPrimary();
+
+                    if (primary != null &&
+                            primary.getAtom()
+                                    instanceof IdentifierAtom identifier) {
+
+                        return identifier.getValue();
                     }
                 }
             }
         }
+
         return null;
     }
 
@@ -916,39 +1169,70 @@ public class Visitor extends FlaskParserBaseVisitor {
         currentArrayContext = previousArrayContext;
         return new ArrayLiteral(expressionList);
     }
-    private ObjectLiteral findObjectLiteralInExpression(Expression expr) {
-        if (expr == null) return null;
-        Comparison comp = expr.getComparison();
-        if (comp == null) return null;
-        LogicalOR firstOr = comp.getFirst();
-        if (firstOr == null) return null;
-        List<LogicalAnd> orTerms = firstOr.getRest();
-        if (orTerms == null) return null;
+    private ObjectLiteral findObjectLiteralInExpression(
+            Expression expr
+    ) {
 
-        for (LogicalAnd logicalAnd : orTerms) {
-            List<Additive> additives = logicalAnd.getAdditives();
-            if (additives != null) {
-                for (Additive additive : additives) {
-                    List<Multiplicative> multis = additive.getMultiplicatives();
-                    if (multis != null) {
-                        for (Multiplicative multi : multis) {
-                            List<Unary> unaries = multi.getUnaryList();
-                            if (unaries != null) {
-                                for (Unary unary : unaries) {
-                                    Primary primary = unary.getPrimary();
-                                    if (primary != null && primary.getAtom() instanceof ObjectLiteral) {
-                                        return (ObjectLiteral) primary.getAtom();
-                                    }
-                                }
-                            }
-                        }
+        return traverseExpression(expr, primary -> {
+
+            if (primary.getAtom() instanceof ObjectLiteral obj) {
+                return obj;
+            }
+
+            return null;
+        });
+    }
+
+    private ObjectLiteral findObjectLiteralInLogicalAnd(
+            LogicalAnd logicalAnd
+    ) {
+
+        if (logicalAnd == null) {
+            return null;
+        }
+
+        List<Additive> additives =
+                logicalAnd.getAdditives();
+
+        if (additives == null) {
+            return null;
+        }
+
+        for (Additive additive : additives) {
+
+            List<Multiplicative> multis =
+                    additive.getMultiplicatives();
+
+            if (multis == null) {
+                continue;
+            }
+
+            for (Multiplicative multi : multis) {
+
+                List<Unary> unaries =
+                        multi.getUnaryList();
+
+                if (unaries == null) {
+                    continue;
+                }
+
+                for (Unary unary : unaries) {
+
+                    Primary primary =
+                            unary.getPrimary();
+
+                    if (primary != null &&
+                            primary.getAtom()
+                                    instanceof ObjectLiteral objectLiteral) {
+
+                        return objectLiteral;
                     }
                 }
             }
         }
+
         return null;
     }
-
     @Override
     public ListComprehension visitListComprehension(FlaskParser.ListComprehensionContext ctx) {
         Expression target = (Expression) visit(ctx.expression(0));
@@ -964,9 +1248,277 @@ public class Visitor extends FlaskParserBaseVisitor {
     // ==================== كلاس مساعد ====================
     private static class RenderTemplateInfo {
         String templatePath;
+        Map<String, String> passedVariables;
 
         RenderTemplateInfo(String templatePath) {
             this.templatePath = templatePath;
+            this.passedVariables = new HashMap<>();
         }
+
+        public void addVariable(String key, String value) {
+            passedVariables.put(key, value);
+        }
+    }
+    private LiteralType resolveMultiplicativeType(
+            Multiplicative mult
+    ) {
+
+        if (mult.getUnaryList().isEmpty()) {
+            return null;
+        }
+
+        Unary unary = mult.getUnaryList().get(0);
+
+        if (unary == null) {
+            return null;
+        }
+
+        Primary primary = unary.getPrimary();
+
+        if (primary == null) {
+            return null;
+        }
+
+        Atom atom = primary.getAtom();
+
+        // ====================================
+        // Literal
+        // ====================================
+
+        if (atom instanceof Literal literal) {
+            return literal.getType();
+        }
+
+        // ====================================
+        // Identifier / Function Call
+        // ====================================
+
+        if (atom instanceof IdentifierAtom identifier) {
+
+            String name = identifier.getValue();
+
+            boolean isFunctionCall = false;
+
+            for (Postfix postfix : primary.getPostfixes()) {
+
+                if (postfix instanceof Call) {
+                    isFunctionCall = true;
+                    break;
+                }
+            }
+
+            // ====================================
+            // Function Call
+            // ====================================
+
+            if (isFunctionCall) {
+
+                String fullFunctionName =
+                        resolveFullFunctionName(primary);
+
+                LiteralType builtinType =
+                        Main.semanticError
+                                .getE6()
+                                .getBuiltinFunctionType(
+                                        fullFunctionName
+                                );
+
+                if (builtinType != null) {
+                    return builtinType;
+                }
+            }
+
+            // ====================================
+            // Variable
+            // ====================================
+
+            return Main.semanticError
+                    .getE6()
+                    .getType(name);
+        }
+
+        // ====================================
+        // Array Literal
+        // ====================================
+
+        if (atom instanceof ArrayLiteral) {
+            return LiteralType.ARRAY;
+        }
+
+        // ====================================
+        // Object Literal
+        // ====================================
+
+        if (atom instanceof ObjectLiteral) {
+            return LiteralType.OBJECT;
+        }
+
+        return null;
+    }
+    private LiteralType resolveExpressionType(
+            Expression expr
+    ) {
+
+        if (expr == null) {
+            return null;
+        }
+
+        Comparison comparison =
+                expr.getComparison();
+
+        if (comparison == null) {
+            return null;
+        }
+
+        LogicalOR logicalOR =
+                comparison.getFirst();
+
+        if (logicalOR == null) {
+            return null;
+        }
+
+        LogicalAnd logicalAnd =
+                logicalOR.getFirst();
+
+        if (logicalAnd == null ||
+                logicalAnd.getAdditives().isEmpty()) {
+
+            return null;
+        }
+
+        Additive additive =
+                logicalAnd.getAdditives().get(0);
+
+        if (additive.getMultiplicatives().isEmpty()) {
+            return null;
+        }
+
+        return resolveMultiplicativeType(
+                additive.getMultiplicatives().get(0)
+        );
+    }
+    private String resolveFullFunctionName(
+            Primary primary
+    ) {
+
+        if (primary == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (primary.getAtom() instanceof IdentifierAtom id) {
+
+            sb.append(id.getValue());
+
+        } else {
+            return null;
+        }
+
+        for (Postfix postfix : primary.getPostfixes()) {
+
+            if (postfix instanceof MemberAccess member) {
+
+                sb.append(".");
+                sb.append(member.getValue());
+            }
+
+            if (postfix instanceof Call) {
+                break;
+            }
+        }
+
+        return sb.toString();
+    }
+    private <T> T traverseExpression(
+            Expression expr,
+            Function<Primary, T> extractor
+    ) {
+        if (expr == null) return null;
+
+        Comparison comparison = expr.getComparison();
+        if (comparison == null) return null;
+
+        LogicalOR logicalOR = comparison.getFirst();
+        if (logicalOR == null) return null;
+
+        // first
+        T result = traverseLogicalAnd(
+                logicalOR.getFirst(),
+                extractor
+        );
+
+        if (result != null) {
+            return result;
+        }
+
+        // rest
+        for (LogicalAnd logicalAnd : logicalOR.getRest()) {
+
+            result = traverseLogicalAnd(
+                    logicalAnd,
+                    extractor
+            );
+
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+    private <T> T traverseLogicalAnd(
+            LogicalAnd logicalAnd,
+            Function<Primary, T> extractor
+    ) {
+
+        if (logicalAnd == null) {
+            return null;
+        }
+
+        List<Additive> additives =
+                logicalAnd.getAdditives();
+
+        if (additives == null) {
+            return null;
+        }
+
+        for (Additive additive : additives) {
+
+            List<Multiplicative> multis =
+                    additive.getMultiplicatives();
+
+            if (multis == null) {
+                continue;
+            }
+
+            for (Multiplicative multi : multis) {
+
+                List<Unary> unaries =
+                        multi.getUnaryList();
+
+                if (unaries == null) {
+                    continue;
+                }
+
+                for (Unary unary : unaries) {
+
+                    Primary primary =
+                            unary.getPrimary();
+
+                    if (primary == null) {
+                        continue;
+                    }
+
+                    T result = extractor.apply(primary);
+
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }
