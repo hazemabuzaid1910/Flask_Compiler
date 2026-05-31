@@ -20,21 +20,6 @@ public class E6_symbolTable extends symbolTable<E6_obj> {
         }
     }
 
-    // ===============================
-    // حذف Scope
-    // ===============================
-
-    public void remove() {
-
-        if (!stack.isEmpty()) {
-
-            stack.pop();
-        }
-    }
-
-    // ===============================
-    // Builtin Functions
-    // ===============================
 
     public void addBuiltinFunction(
             String name,
@@ -71,9 +56,7 @@ public class E6_symbolTable extends symbolTable<E6_obj> {
         return null;
     }
 
-    // ===============================
-    // Variables
-    // ===============================
+
 
     // إضافة متغير جديد
     public void addVariable(
@@ -91,27 +74,7 @@ public class E6_symbolTable extends symbolTable<E6_obj> {
         currentScope.addVariable(name, type);
     }
 
-    // تحديث نوع متغير موجود
-    public void updateVariable(
-            String name,
-            LiteralType type
-    ) {
 
-        for (int i = stack.size() - 1; i >= 0; i--) {
-
-            E6_obj scope = stack.get(i);
-
-            if (scope.contains(name)) {
-
-                scope.updateVariable(name, type);
-
-                return;
-            }
-        }
-
-        // إذا المتغير غير موجود أضفه في الـ scope الحالي
-        addVariable(name, type);
-    }
 
     // جلب نوع متغير
     public LiteralType getType(String name) {
@@ -131,34 +94,6 @@ public class E6_symbolTable extends symbolTable<E6_obj> {
         return null;
     }
 
-    // ===============================
-    // Check Variable Exists
-    // ===============================
-
-    public void checkVariableExists(
-            String name,
-            int line
-    ) {
-
-        LiteralType type = getType(name);
-
-        if (type == null) {
-
-            Symantic_Error error = new Symantic_Error();
-
-            error.addError(
-                    Error_Type.VAR_NOT_EXIST,
-                    "Variable '" + name + "' is not defined",
-                    String.valueOf(line)
-            );
-
-            Main.errors.add(error);
-        }
-    }
-
-    // ===============================
-    // Type Checking
-    // ===============================
 
     public void checkOperation(
             LiteralType left,
