@@ -175,223 +175,9 @@ public class Visitor extends FlaskParserBaseVisitor {
         return new ReturnStatement(expression);
     }
 
-    private RenderTemplateInfo extractRenderTemplateInfo(
-            Expression expr
-    ) {
-
-        return traverseExpression(expr, primary -> {
-
-            Atom atom = primary.getAtom();
-
-            if (!(atom instanceof IdentifierAtom identifier)) {
-                return null;
-            }
-
-            if (!"render_template".equals(identifier.getValue())) {
-                return null;
-            }
-
-            for (Postfix postfix : primary.getPostfixes()) {
-
-                if (postfix instanceof Call call) {
-                    return extractTemplatePathFromCall(call);
-                }
-            }
-
-            return null;
-        });
-    }
-
-    private RenderTemplateInfo searchInLogicalAnd(LogicalAnd logicalAnd) {
-        List<Additive> additives = logicalAnd.getAdditives();
-        if (additives == null || additives.isEmpty()) return null;
-
-        for (Additive additive : additives) {
-            RenderTemplateInfo result = searchInAdditive(additive);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    private RenderTemplateInfo searchInAdditive(Additive additive) {
-        List<Multiplicative> multiplicatives = additive.getMultiplicatives();
-        if (multiplicatives == null || multiplicatives.isEmpty()) return null;
-
-        for (Multiplicative multi : multiplicatives) {
-            RenderTemplateInfo result = searchInMultiplicative(multi);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    private RenderTemplateInfo searchInMultiplicative(Multiplicative multiplicative) {
-        List<Unary> unaries = multiplicative.getUnaryList();
-        if (unaries == null || unaries.isEmpty()) return null;
-
-        for (Unary unary : unaries) {
-            RenderTemplateInfo result = searchInUnary(unary);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    private RenderTemplateInfo searchInUnary(Unary unary) {
-        Primary primary = unary.getPrimary();
-        if (primary == null) return null;
-        return searchInPrimary(primary);
-    }
-
-    private RenderTemplateInfo searchInPrimary(Primary primary) {
-        Atom atom = primary.getAtom();
-        List<Postfix> postfixes = primary.getPostfixes();
-
-        if (!(atom instanceof IdentifierAtom)) return null;
-        String functionName = ((IdentifierAtom) atom).getValue();
-        if (!"render_template".equals(functionName)) return null;
-
-        for (Postfix postfix : postfixes) {
-            if (postfix instanceof Call) {
-                Call call = (Call) postfix;
-                return extractTemplatePathFromCall(call);
-            }
-        }
-
-        return null;
-    }
-
-    private RenderTemplateInfo extractTemplatePathFromCall(Call call) {
-        ArgumentList args = call.getArgumentList();
-
-        if (args == null) return null;
-
-        List<Argument> arguments = args.getArguments();
-
-        if (arguments.isEmpty()) return null;
-
-        RenderTemplateInfo info = null;
-
-        for (int i = 0; i < arguments.size(); i++) {
-
-            Argument arg = arguments.get(i);
-
-            // أول argument = اسم الملف
-            if (i == 0 && arg instanceof ArgExpression) {
-
-                Expression expr = ((ArgExpression) arg).getExpression();
-
-                String templatePath = extractStringFromExpression(expr);
-
-                if (templatePath != null) {
-                    info = new RenderTemplateInfo(templatePath);
-                }
-            }
-
-            // باقي arguments = variables
-            else if (arg instanceof ArgAssignment && info != null) {
-
-                ArgAssignment assign = (ArgAssignment) arg;
-
-                String variableName = assign.getIdentifier();
-
-                String variableValue =
-                        extractIdentifierFromExpression(assign.getExpression());
-
-                info.addVariable(variableName, variableValue);
-            }
-        }
-
-        return info;
-    }
-
-    private String extractStringFromExpression(Expression expr) {
-
-        return traverseExpression(expr, primary -> {
-
-            Atom atom = primary.getAtom();
-
-            if (atom instanceof Literal literal &&
-                    literal.getType() == LiteralType.STRING) {
-
-                return (String) literal.getValue();
-            }
-
-            return null;
-        });
-    }
-    private String extractStringFromLogicalAnd(LogicalAnd logicalAnd) {
-        List<Additive> additives = logicalAnd.getAdditives();
-        if (additives == null || additives.isEmpty()) return null;
-
-        for (Additive additive : additives) {
-            String result = extractStringFromAdditive(additive);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    private String extractStringFromAdditive(Additive additive) {
-        List<Multiplicative> multiplicatives = additive.getMultiplicatives();
-        if (multiplicatives == null || multiplicatives.isEmpty()) return null;
-
-        for (Multiplicative multi : multiplicatives) {
-            String result = extractStringFromMultiplicative(multi);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    private String extractStringFromMultiplicative(Multiplicative multiplicative) {
-        List<Unary> unaries = multiplicative.getUnaryList();
-        if (unaries == null || unaries.isEmpty()) return null;
-
-        for (Unary unary : unaries) {
-            String result = extractStringFromUnary(unary);
-            if (result != null) return result;
-        }
-        return null;
-    }
-
-    private String extractStringFromUnary(Unary unary) {
-        Primary primary = unary.getPrimary();
-        if (primary == null) return null;
-
-        Atom atom = primary.getAtom();
-        if (atom instanceof Literal) {
-            Literal literal = (Literal) atom;
-            if (literal.getType() == LiteralType.STRING) {
-                return (String) literal.getValue();
-            }
-        }
-
-        return null;
-    }
 
 
-    private String resolveTemplatePath(String relativePath) {
-        if (relativePath.startsWith("\"") && relativePath.endsWith("\"")) {
-            relativePath = relativePath.substring(1, relativePath.length() - 1);
-        }
-        if (relativePath.startsWith("'") && relativePath.endsWith("'")) {
-            relativePath = relativePath.substring(1, relativePath.length() - 1);
-        }
 
-        return templatesDir + relativePath;
-    }
-
-    private String readHtmlFile(String filePath) {
-        try {
-            Path path = Paths.get(filePath);
-            if (!Files.exists(path)) {
-                System.err.println("Template file not found: " + filePath);
-                return null;
-            }
-            return new String(Files.readAllBytes(path));
-        } catch (IOException e) {
-            System.err.println("Error reading template file: " + filePath);
-            e.printStackTrace();
-            return null;
-        }
-    }
     @Override
     public Statement visitStmtIf(FlaskParser.StmtIfContext ctx) {
         IfStatement ifStmt = visitIfStatement(ctx.ifStatement());
@@ -485,56 +271,7 @@ public class Visitor extends FlaskParserBaseVisitor {
 
         return null;
     }
-    private String extractArrayNameFromLogicalAnd(
-            LogicalAnd logicalAnd
-    ) {
 
-        if (logicalAnd == null) {
-            return null;
-        }
-
-        List<Additive> additives =
-                logicalAnd.getAdditives();
-
-        if (additives == null) {
-            return null;
-        }
-
-        for (Additive additive : additives) {
-
-            List<Multiplicative> multiplicatives =
-                    additive.getMultiplicatives();
-
-            if (multiplicatives == null) {
-                continue;
-            }
-
-            for (Multiplicative multi : multiplicatives) {
-
-                List<Unary> unaries =
-                        multi.getUnaryList();
-
-                if (unaries == null) {
-                    continue;
-                }
-
-                for (Unary unary : unaries) {
-
-                    Primary primary =
-                            unary.getPrimary();
-
-                    if (primary != null &&
-                            primary.getAtom()
-                                    instanceof IdentifierAtom identifier) {
-
-                        return identifier.getValue();
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
     @Override
     public Statement visitStmtWith(FlaskParser.StmtWithContext ctx) {
         return visitWithStatement(ctx.withStatement());
@@ -1002,74 +739,10 @@ public class Visitor extends FlaskParserBaseVisitor {
 
         return new AssignmentStatement(left, right);
     }
-    private String extractIdentifierFromExpression(Expression expr) {
 
-        return traverseExpression(expr, primary -> {
 
-            if (primary.getAtom() instanceof IdentifierAtom identifier) {
-                return identifier.getValue();
-            }
 
-            return null;
-        });
-    }
-    private String extractIdentifierFromLogicalAnd(
-            LogicalAnd logicalAnd
-    ) {
 
-        if (logicalAnd == null) {
-            return null;
-        }
-
-        List<Additive> additives =
-                logicalAnd.getAdditives();
-
-        if (additives == null) {
-            return null;
-        }
-
-        for (Additive additive : additives) {
-
-            List<Multiplicative> multiplicatives =
-                    additive.getMultiplicatives();
-
-            if (multiplicatives == null) {
-                continue;
-            }
-
-            for (Multiplicative multi : multiplicatives) {
-
-                List<Unary> unaries =
-                        multi.getUnaryList();
-
-                if (unaries == null) {
-                    continue;
-                }
-
-                for (Unary unary : unaries) {
-
-                    Primary primary =
-                            unary.getPrimary();
-
-                    if (primary != null &&
-                            primary.getAtom()
-                                    instanceof IdentifierAtom identifier) {
-
-                        return identifier.getValue();
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private String extractObjectNameFromPrimary(Primary primary) {
-        if (primary != null && primary.getAtom() instanceof IdentifierAtom) {
-            return ((IdentifierAtom) primary.getAtom()).getValue();
-        }
-        return null;
-    }
 
     @Override
     public CompOp visitCompOp(FlaskParser.CompOpContext ctx) {
@@ -1169,70 +842,9 @@ public class Visitor extends FlaskParserBaseVisitor {
         currentArrayContext = previousArrayContext;
         return new ArrayLiteral(expressionList);
     }
-    private ObjectLiteral findObjectLiteralInExpression(
-            Expression expr
-    ) {
 
-        return traverseExpression(expr, primary -> {
 
-            if (primary.getAtom() instanceof ObjectLiteral obj) {
-                return obj;
-            }
 
-            return null;
-        });
-    }
-
-    private ObjectLiteral findObjectLiteralInLogicalAnd(
-            LogicalAnd logicalAnd
-    ) {
-
-        if (logicalAnd == null) {
-            return null;
-        }
-
-        List<Additive> additives =
-                logicalAnd.getAdditives();
-
-        if (additives == null) {
-            return null;
-        }
-
-        for (Additive additive : additives) {
-
-            List<Multiplicative> multis =
-                    additive.getMultiplicatives();
-
-            if (multis == null) {
-                continue;
-            }
-
-            for (Multiplicative multi : multis) {
-
-                List<Unary> unaries =
-                        multi.getUnaryList();
-
-                if (unaries == null) {
-                    continue;
-                }
-
-                for (Unary unary : unaries) {
-
-                    Primary primary =
-                            unary.getPrimary();
-
-                    if (primary != null &&
-                            primary.getAtom()
-                                    instanceof ObjectLiteral objectLiteral) {
-
-                        return objectLiteral;
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
     @Override
     public ListComprehension visitListComprehension(FlaskParser.ListComprehensionContext ctx) {
         Expression target = (Expression) visit(ctx.expression(0));
@@ -1245,7 +857,7 @@ public class Visitor extends FlaskParserBaseVisitor {
         return new ListComprehension(target, loopVar, iterable, condition);
     }
 
-    // ==================== كلاس مساعد ====================
+    // ====================  دوال مساعدة ====================
     private static class RenderTemplateInfo {
         String templatePath;
         Map<String, String> passedVariables;
@@ -1258,6 +870,36 @@ public class Visitor extends FlaskParserBaseVisitor {
         public void addVariable(String key, String value) {
             passedVariables.put(key, value);
         }
+    }
+    private String extractIdentifierFromExpression(Expression expr) {
+
+        return traverseExpression(expr, primary -> {
+
+            if (primary.getAtom() instanceof IdentifierAtom identifier) {
+                return identifier.getValue();
+            }
+
+            return null;
+        });
+    }
+    private String extractObjectNameFromPrimary(Primary primary) {
+        if (primary != null && primary.getAtom() instanceof IdentifierAtom) {
+            return ((IdentifierAtom) primary.getAtom()).getValue();
+        }
+        return null;
+    }
+    private ObjectLiteral findObjectLiteralInExpression(
+            Expression expr
+    ) {
+
+        return traverseExpression(expr, primary -> {
+
+            if (primary.getAtom() instanceof ObjectLiteral obj) {
+                return obj;
+            }
+
+            return null;
+        });
     }
     private LiteralType resolveMultiplicativeType(
             Multiplicative mult
@@ -1281,17 +923,9 @@ public class Visitor extends FlaskParserBaseVisitor {
 
         Atom atom = primary.getAtom();
 
-        // ====================================
-        // Literal
-        // ====================================
-
         if (atom instanceof Literal literal) {
             return literal.getType();
         }
-
-        // ====================================
-        // Identifier / Function Call
-        // ====================================
 
         if (atom instanceof IdentifierAtom identifier) {
 
@@ -1307,9 +941,6 @@ public class Visitor extends FlaskParserBaseVisitor {
                 }
             }
 
-            // ====================================
-            // Function Call
-            // ====================================
 
             if (isFunctionCall) {
 
@@ -1328,26 +959,17 @@ public class Visitor extends FlaskParserBaseVisitor {
                 }
             }
 
-            // ====================================
-            // Variable
-            // ====================================
 
             return Main.semanticError
                     .getE6()
                     .getType(name);
         }
 
-        // ====================================
-        // Array Literal
-        // ====================================
 
         if (atom instanceof ArrayLiteral) {
             return LiteralType.ARRAY;
         }
 
-        // ====================================
-        // Object Literal
-        // ====================================
 
         if (atom instanceof ObjectLiteral) {
             return LiteralType.OBJECT;
@@ -1466,6 +1088,216 @@ public class Visitor extends FlaskParserBaseVisitor {
         }
 
         return null;
+    }
+    private RenderTemplateInfo extractRenderTemplateInfo(
+            Expression expr
+    ) {
+
+        return traverseExpression(expr, primary -> {
+
+            Atom atom = primary.getAtom();
+
+            if (!(atom instanceof IdentifierAtom identifier)) {
+                return null;
+            }
+
+            if (!"render_template".equals(identifier.getValue())) {
+                return null;
+            }
+
+            for (Postfix postfix : primary.getPostfixes()) {
+
+                if (postfix instanceof Call call) {
+                    return extractTemplatePathFromCall(call);
+                }
+            }
+
+            return null;
+        });
+    }
+
+    private String extractArrayNameFromLogicalAnd(
+            LogicalAnd logicalAnd
+    ) {
+
+        if (logicalAnd == null) {
+            return null;
+        }
+
+        List<Additive> additives =
+                logicalAnd.getAdditives();
+
+        if (additives == null) {
+            return null;
+        }
+
+        for (Additive additive : additives) {
+
+            List<Multiplicative> multiplicatives =
+                    additive.getMultiplicatives();
+
+            if (multiplicatives == null) {
+                continue;
+            }
+
+            for (Multiplicative multi : multiplicatives) {
+
+                List<Unary> unaries =
+                        multi.getUnaryList();
+
+                if (unaries == null) {
+                    continue;
+                }
+
+                for (Unary unary : unaries) {
+
+                    Primary primary =
+                            unary.getPrimary();
+
+                    if (primary != null &&
+                            primary.getAtom()
+                                    instanceof IdentifierAtom identifier) {
+
+                        return identifier.getValue();
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+    private RenderTemplateInfo extractTemplatePathFromCall(Call call) {
+        ArgumentList args = call.getArgumentList();
+
+        if (args == null) return null;
+
+        List<Argument> arguments = args.getArguments();
+
+        if (arguments.isEmpty()) return null;
+
+        RenderTemplateInfo info = null;
+
+        for (int i = 0; i < arguments.size(); i++) {
+
+            Argument arg = arguments.get(i);
+
+            // أول argument = اسم الملف
+            if (i == 0 && arg instanceof ArgExpression) {
+
+                Expression expr = ((ArgExpression) arg).getExpression();
+
+                String templatePath = extractStringFromExpression(expr);
+
+                if (templatePath != null) {
+                    info = new RenderTemplateInfo(templatePath);
+                }
+            }
+
+            // باقي arguments = variables
+            else if (arg instanceof ArgAssignment && info != null) {
+
+                ArgAssignment assign = (ArgAssignment) arg;
+
+                String variableName = assign.getIdentifier();
+
+                String variableValue =
+                        extractIdentifierFromExpression(assign.getExpression());
+
+                info.addVariable(variableName, variableValue);
+            }
+        }
+
+        return info;
+    }
+
+    private String extractStringFromExpression(Expression expr) {
+
+        return traverseExpression(expr, primary -> {
+
+            Atom atom = primary.getAtom();
+
+            if (atom instanceof Literal literal &&
+                    literal.getType() == LiteralType.STRING) {
+
+                return (String) literal.getValue();
+            }
+
+            return null;
+        });
+    }
+    private String extractStringFromLogicalAnd(LogicalAnd logicalAnd) {
+        List<Additive> additives = logicalAnd.getAdditives();
+        if (additives == null || additives.isEmpty()) return null;
+
+        for (Additive additive : additives) {
+            String result = extractStringFromAdditive(additive);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
+    private String extractStringFromAdditive(Additive additive) {
+        List<Multiplicative> multiplicatives = additive.getMultiplicatives();
+        if (multiplicatives == null || multiplicatives.isEmpty()) return null;
+
+        for (Multiplicative multi : multiplicatives) {
+            String result = extractStringFromMultiplicative(multi);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
+    private String extractStringFromMultiplicative(Multiplicative multiplicative) {
+        List<Unary> unaries = multiplicative.getUnaryList();
+        if (unaries == null || unaries.isEmpty()) return null;
+
+        for (Unary unary : unaries) {
+            String result = extractStringFromUnary(unary);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
+    private String extractStringFromUnary(Unary unary) {
+        Primary primary = unary.getPrimary();
+        if (primary == null) return null;
+
+        Atom atom = primary.getAtom();
+        if (atom instanceof Literal) {
+            Literal literal = (Literal) atom;
+            if (literal.getType() == LiteralType.STRING) {
+                return (String) literal.getValue();
+            }
+        }
+
+        return null;
+    }
+
+
+    private String resolveTemplatePath(String relativePath) {
+        if (relativePath.startsWith("\"") && relativePath.endsWith("\"")) {
+            relativePath = relativePath.substring(1, relativePath.length() - 1);
+        }
+        if (relativePath.startsWith("'") && relativePath.endsWith("'")) {
+            relativePath = relativePath.substring(1, relativePath.length() - 1);
+        }
+
+        return templatesDir + relativePath;
+    }
+
+    private String readHtmlFile(String filePath) {
+        try {
+            Path path = Paths.get(filePath);
+            if (!Files.exists(path)) {
+                System.err.println("Template file not found: " + filePath);
+                return null;
+            }
+            return new String(Files.readAllBytes(path));
+        } catch (IOException e) {
+            System.err.println("Error reading template file: " + filePath);
+            e.printStackTrace();
+            return null;
+        }
     }
     private <T> T traverseLogicalAnd(
             LogicalAnd logicalAnd,
