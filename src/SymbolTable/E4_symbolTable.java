@@ -44,12 +44,9 @@ public class E4_symbolTable extends symbolTable<E4_obj>{
             return false;
         }
 
-
-
             if(stack.peek().getMap().containsKey(value)){
                 return true;
             }
-
 
           if (stack.firstElement().getMap().containsKey(value)){
               return true;
