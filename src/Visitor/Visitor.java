@@ -25,9 +25,7 @@ public class Visitor extends FlaskParserBaseVisitor {
     private String currentArrayContext = null;
     private Stack<String> objectNameStack = new Stack<>();
 
-
-
-
+    
     @Override
     public Object visitProgram(FlaskParser.ProgramContext ctx) {
         Main.semanticError.getE2().insert();

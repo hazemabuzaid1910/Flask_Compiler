@@ -4,6 +4,7 @@ import AST.flask.Program;
 import SymbolTable.E2_symbolTable;
 import antler.FlaskLexer;
 import antler.FlaskParser;
+import generator.Generator;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -61,7 +62,10 @@ public class Main {
         // ================================
         System.out.println("========== AST ==========");
         System.out.print(programAst);
+        Generator generator =
+                new Generator();
 
+        generator.generate(programAst);
         semanticError = new check_Symantic_Error() ;
         errors = new ArrayList<>();
     }
