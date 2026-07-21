@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import Visitor.Visitor;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,9 @@ public class Main {
 //            System.out.println(tokenName + ": '" + token.getText().replace("\n", "\\n") + "'");
 //        }
 
-        String filePath = "C:/Users/hazem/OneDrive/Desktop/4/minmax/Compiler/project/app.py";
+        String filePath = args.length > 0
+                ? args[0]
+                : Paths.get("project", "app.py").toAbsolutePath().toString();
 
         File file = new File(filePath);
         if (!file.exists()) {
@@ -54,6 +57,11 @@ public class Main {
         // زيارة الشجرة باستخدام Visitor
         // ================================
         Visitor visitor = new Visitor();
+        visitor.setTemplatesDir(
+                Paths.get("project", "templates")
+                        .toAbsolutePath()
+                        .toString()
+        );
         Program programAst = (Program) visitor.visit(tree);
 
         semanticError.check_Errors();
