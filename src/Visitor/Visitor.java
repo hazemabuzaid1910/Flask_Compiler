@@ -19,11 +19,15 @@ import java.util.function.Function;
 
 public class Visitor extends FlaskParserBaseVisitor {
 
-    private String templatesDir = "C:/Users/hazem/OneDrive/Desktop/4/minmax/Compiler/project/templates/";
+    private String templatesDir = Paths.get("project", "templates").toAbsolutePath().toString();
     private String currentObjectName = null;
     private Stack<String> objectStack = new Stack<>();
     private String currentArrayContext = null;
     private Stack<String> objectNameStack = new Stack<>();
+
+    public void setTemplatesDir(String templatesDir) {
+        this.templatesDir = templatesDir;
+    }
 
     
     @Override
@@ -1280,7 +1284,7 @@ public class Visitor extends FlaskParserBaseVisitor {
             relativePath = relativePath.substring(1, relativePath.length() - 1);
         }
 
-        return templatesDir + relativePath;
+        return Paths.get(templatesDir, relativePath).toString();
     }
 
     private String readHtmlFile(String filePath) {
