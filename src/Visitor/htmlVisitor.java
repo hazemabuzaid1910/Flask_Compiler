@@ -123,7 +123,7 @@ public class htmlVisitor extends HtmlParserBaseVisitor {
 
     @Override
     public AST.flask.DottedName visitDottedName(HtmlParser.DottedNameContext ctx) {
-        String first=ctx.IDENTIFIER().getFirst().getText();
+        String first=ctx.IDENTIFIER().get(0).getText();
         List<TerminalNode> ids=ctx.IDENTIFIER();
         List<String> rest = ids.subList(1,ids.size())
                 .stream()

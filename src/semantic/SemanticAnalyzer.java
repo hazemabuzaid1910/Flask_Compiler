@@ -1,7 +1,57 @@
 package semantic;
 
-import AST.flask.*;
-import AST.html.*;
+import AST.flask.ArgAssignment;
+import AST.flask.ArgExpression;
+import AST.flask.Argument;
+import AST.flask.ArgumentList;
+import AST.flask.ArrayLiteral;
+import AST.flask.AssignmentStatement;
+import AST.flask.Atom;
+import AST.flask.Block;
+import AST.flask.Call;
+import AST.flask.Decorator;
+import AST.flask.DecoratorStatement;
+import AST.flask.Expression;
+import AST.flask.ForStatement;
+import AST.flask.FunctionDef;
+import AST.flask.IdentifierAtom;
+import AST.flask.IfStatement;
+import AST.flask.IndexAccess;
+import AST.flask.ImportAlias;
+import AST.flask.ImportFrom;
+import AST.flask.ImportSimple;
+import AST.flask.MemberAccess;
+import AST.flask.ObjectLiteral;
+import AST.flask.Pair;
+import AST.flask.ParamExpression;
+import AST.flask.ParamIdentifier;
+import AST.flask.ParameterFunction;
+import AST.flask.ParameterList;
+import AST.flask.Postfix;
+import AST.flask.Primary;
+import AST.flask.Program;
+import AST.flask.ReturnStatement;
+import AST.flask.Statement;
+import AST.flask.StmtAssign;
+import AST.flask.StmtDecorator;
+import AST.flask.StmtExpression;
+import AST.flask.StmtFor;
+import AST.flask.StmtFunction;
+import AST.flask.StmtIf;
+import AST.flask.StmtReturn;
+import AST.flask.StmtWith;
+import AST.flask.WithStatement;
+import AST.html.ExpressionJinja;
+import AST.html.ForBlock;
+import AST.html.HtmlAttribute;
+import AST.html.HtmlContent;
+import AST.html.HtmlElement;
+import AST.html.HtmlNode;
+import AST.html.HtmlPairTag;
+import AST.html.HtmlSingleTagSelfClosing;
+import AST.html.HtmlTag;
+import AST.html.IfBlock;
+import AST.html.StatementJinja;
 import MainApp.Error_Type;
 import MainApp.Main;
 import MainApp.Symantic_Error;
@@ -65,7 +115,7 @@ public class SemanticAnalyzer {
             return;
         }
 
-        functionSignatures.put(name, new FunctionSignature(name, count));
+        functionSignatures.put(name, new FunctionSignature(count));
     }
 
     private int parameterCount(ParameterList parameterList) {
@@ -524,8 +574,8 @@ public class SemanticAnalyzer {
             return;
         }
 
-        if (content instanceof StatementJinja statementJinja && statementJinja.getJinjaStatement() instanceof HtmlContent jinjaContent) {
-            analyzeHtmlContent(jinjaContent, templateScope, pythonScope, templateName);
+        if (content instanceof StatementJinja statementJinja) {
+            analyzeHtmlContent(statementJinja.getJinjaStatement(), templateScope, pythonScope, templateName);
         }
     }
 
@@ -565,7 +615,7 @@ public class SemanticAnalyzer {
         }
     }
 
-    private void validateTemplateReference(DottedName dottedName,
+    private void validateTemplateReference(AST.flask.DottedName dottedName,
                                            TemplateScope templateScope,
                                            Scope pythonScope,
                                            String templateName) {
@@ -641,17 +691,17 @@ public class SemanticAnalyzer {
         scope.defineVariable(name, info);
     }
 
-    private DottedName toDottedName(String value) {
+    private AST.flask.DottedName toDottedName(String value) {
         String[] parts = value.split("\\.");
         String first = parts[0];
         List<String> rest = new ArrayList<>();
         for (int i = 1; i < parts.length; i++) {
             rest.add(parts[i]);
         }
-        return new DottedName(first, rest);
+        return new AST.flask.DottedName(first, rest);
     }
 
-    private String dottedName(DottedName dottedName) {
+    private String dottedName(AST.flask.DottedName dottedName) {
         if (dottedName == null || dottedName.getFirst() == null) {
             return "";
         }
@@ -674,7 +724,7 @@ public class SemanticAnalyzer {
     private static class FunctionSignature {
         private final int parameterCount;
 
-        private FunctionSignature(String name, int parameterCount) {
+        private FunctionSignature(int parameterCount) {
             this.parameterCount = parameterCount;
         }
     }

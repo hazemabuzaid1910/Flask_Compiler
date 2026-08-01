@@ -82,8 +82,8 @@ public class HtmlAstJsonSerializer {
             return node;
         }
 
-        if (content instanceof StatementJinja statementJinja && statementJinja.getJinjaStatement() instanceof HtmlContent jinjaContent) {
-            return serializeContent(jinjaContent);
+        if (content instanceof StatementJinja statementJinja) {
+            return serializeContent(statementJinja.getJinjaStatement());
         }
 
         return JsonNull.INSTANCE;
