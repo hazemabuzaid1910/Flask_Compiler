@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import generator.Generator;
+import semantic.SemanticAnalyzer;
+import serializer.FlaskAstJsonSerializer;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -64,12 +66,16 @@ public class Main {
         // ================================
         Visitor visitor = new Visitor();
         Program programAst = (Program) visitor.visit(tree);
+        errors = new ArrayList<>();
+        SemanticAnalyzer analyzer = new SemanticAnalyzer();
+        analyzer.analyze(programAst);
 
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
 
-        JsonElement root = gson.toJsonTree(programAst);
+        FlaskAstJsonSerializer serializer = new FlaskAstJsonSerializer();
+        JsonElement root = serializer.serialize(programAst);
 
         removeEmpty(root);
 
