@@ -2,7 +2,7 @@ package AST.html;
 
 import java.util.List;
 
-public class IfBlock {
+public class IfBlock implements JinjaStatement {
     private String ConditionVariable;   // product
     List<HtmlContent> htmlContents;
 
