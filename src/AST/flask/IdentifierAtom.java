@@ -1,24 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class IdentifierAtom implements Atom{
+public class IdentifierAtom implements Atom {
     String value;
 
-    public IdentifierAtom(String value) {
-        this.value = value;
+    public IdentifierAtom(String var1) {
+        this.value = var1;
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(String var1) {
+        this.value = var1;
     }
 
-    @Override
     public String toString() {
-        return "IdentifierAtom{" +
-                "value='" + value + '\'' +
-                '}';
+        return "IdentifierAtom{value='" + this.value + "'}";
     }
 }

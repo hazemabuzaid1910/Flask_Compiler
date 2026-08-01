@@ -1,51 +1,53 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 import java.util.List;
 
-public class ImportFrom implements  ImportStatement{
+public class ImportFrom implements ImportStatement {
     DottedName dottedName;
     List<ImportAlias> importAliases;
 
-    public ImportFrom( DottedName dottedName, List<ImportAlias> importAliases) {
-        this.dottedName = dottedName;
-        this.importAliases = importAliases;
+    public ImportFrom(DottedName var1, List<ImportAlias> var2) {
+        this.dottedName = var1;
+        this.importAliases = var2;
     }
-
-
 
     public DottedName getDottedName() {
-        return dottedName;
+        return this.dottedName;
     }
 
-    public void setDottedName(DottedName dottedName) {
-        this.dottedName = dottedName;
+    public void setDottedName(DottedName var1) {
+        this.dottedName = var1;
     }
-
-
 
     public List<ImportAlias> getImportAliases() {
-        return importAliases;
+        return this.importAliases;
     }
 
-    public void setImportAliases(List<ImportAlias> importAliases) {
-        this.importAliases = importAliases;
+    public void setImportAliases(List<ImportAlias> var1) {
+        this.importAliases = var1;
     }
-    @Override
+
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ImportFrom{\n");
-
-        if (dottedName != null) {
-            sb.append("\t\t").append(dottedName);
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ImportFrom{\n");
+        if (this.dottedName != null) {
+            var1.append("\t\t").append(this.dottedName);
         }
 
-        if (importAliases != null && !importAliases.isEmpty()) {
-            if (sb.length() > "ImportFrom{".length()) sb.append(", ");
-            sb.append("\n\t\t").append(importAliases);
+        if (this.importAliases != null && !this.importAliases.isEmpty()) {
+            if (var1.length() > "ImportFrom{".length()) {
+                var1.append(", ");
+            }
+
+            var1.append("\n\t\t").append(this.importAliases);
         }
 
-        sb.append("\n\t\t}");
-        return sb.toString();
+        var1.append("\n\t\t}");
+        return var1.toString();
     }
-
 }

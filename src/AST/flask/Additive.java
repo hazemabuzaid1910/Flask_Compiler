@@ -2,45 +2,51 @@ package AST.flask;
 
 import java.util.List;
 
-public class Additive {
-List<Multiplicative> multiplicatives;
-List<String> operator;
 
-    public Additive(List<Multiplicative> multiplicatives, List<String> operator) {
-        this.multiplicatives = multiplicatives;
-        this.operator = operator;
+
+
+import java.util.List;
+
+public class Additive {
+    List<Multiplicative> multiplicatives;
+    List<String> operator;
+
+    public Additive(List<Multiplicative> var1, List<String> var2) {
+        this.multiplicatives = var1;
+        this.operator = var2;
     }
 
     public List<Multiplicative> getMultiplicatives() {
-        return multiplicatives;
+        return this.multiplicatives;
     }
 
-    public void setMultiplicatives(List<Multiplicative> multiplicatives) {
-        this.multiplicatives = multiplicatives;
+    public void setMultiplicatives(List<Multiplicative> var1) {
+        this.multiplicatives = var1;
     }
 
     public List<String> getOperator() {
-        return operator;
+        return this.operator;
     }
 
-    public void setOperator(List<String> operator) {
-        this.operator = operator;
+    public void setOperator(List<String> var1) {
+        this.operator = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Additive{");
-
-        if (multiplicatives != null && !multiplicatives.isEmpty()) {
-            sb.append(multiplicatives);
+        StringBuilder var1 = new StringBuilder("Additive{");
+        if (this.multiplicatives != null && !this.multiplicatives.isEmpty()) {
+            var1.append(this.multiplicatives);
         }
 
-        if (operator != null && !operator.isEmpty()) {
-            if (multiplicatives != null && !multiplicatives.isEmpty()) sb.append(", ");
-            sb.append("operator=").append(operator);
+        if (this.operator != null && !this.operator.isEmpty()) {
+            if (this.multiplicatives != null && !this.multiplicatives.isEmpty()) {
+                var1.append(", ");
+            }
+
+            var1.append("operator=").append(this.operator);
         }
 
-        sb.append('}');
-        return sb.toString();
+        var1.append('}');
+        return var1.toString();
     }
 }

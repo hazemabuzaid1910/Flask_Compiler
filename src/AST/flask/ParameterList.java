@@ -1,3 +1,8 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 import java.util.List;
@@ -5,29 +10,26 @@ import java.util.List;
 public class ParameterList {
     List<ParameterFunction> parameters;
 
-    public ParameterList(List<ParameterFunction> parameters) {
-        this.parameters = parameters;
+    public ParameterList(List<ParameterFunction> var1) {
+        this.parameters = var1;
     }
 
     public List<ParameterFunction> getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
-    public void setParameters(List<ParameterFunction> parameters) {
-        this.parameters = parameters;
+    public void setParameters(List<ParameterFunction> var1) {
+        this.parameters = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ParameterList{");
-
-        if (parameters != null && !parameters.isEmpty()) {
-            sb.append("parameters=").append(parameters);
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ParameterList{");
+        if (this.parameters != null && !this.parameters.isEmpty()) {
+            var1.append("parameters=").append(this.parameters);
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

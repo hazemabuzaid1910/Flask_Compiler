@@ -1,45 +1,51 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 import AST.html.HtmlNode;
 
 public class ReturnStatement {
     private Expression expression;
-    private HtmlNode htmlNode;  // إضافة حقل HTML
-    private String templatePath; // مسار القالب
+    private HtmlNode htmlNode;
+    private String templatePath;
 
-    public ReturnStatement(Expression expression) {
-        this.expression = expression;
+    public ReturnStatement(Expression var1) {
+        this.expression = var1;
         this.htmlNode = null;
         this.templatePath = null;
     }
 
-    public ReturnStatement(Expression expression, HtmlNode htmlNode, String templatePath) {
-        this.expression = expression;
-        this.htmlNode = htmlNode;
-        this.templatePath = templatePath;
+    public ReturnStatement(Expression var1, HtmlNode var2, String var3) {
+        this.expression = var1;
+        this.htmlNode = var2;
+        this.templatePath = var3;
     }
 
     public Expression getExpression() {
-        return expression;
+        return this.expression;
     }
 
     public HtmlNode getHtmlNode() {
-        return htmlNode;
+        return this.htmlNode;
     }
 
     public String getTemplatePath() {
-        return templatePath;
+        return this.templatePath;
     }
 
     public boolean hasHtmlTemplate() {
-        return htmlNode != null;
+        return this.htmlNode != null;
     }
 
-    @Override
     public String toString() {
-        if (htmlNode != null) {
-            return "ReturnStatement(render_template: " + templatePath + ", htmlAST: " + htmlNode + ")";
+        if (this.htmlNode != null) {
+            String var10000 = this.templatePath;
+            return "ReturnStatement(render_template: " + var10000 + ", htmlAST: " + String.valueOf(this.htmlNode) + ")";
+        } else {
+            return "ReturnStatement(expression: " + String.valueOf(this.expression) + ")";
         }
-        return "ReturnStatement(expression: " + expression + ")";
     }
 }

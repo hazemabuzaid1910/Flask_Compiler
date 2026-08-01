@@ -1,0 +1,12 @@
+Generator started: 2026-07-31T16:34:46.092159800
+Captured global variable: app
+Captured global variable: DATA_FILE
+Functions discovered: [load_products, save_products, home, add_product, delete_product, edit_product]
+Template generation task created: index.html from function home
+Template generation task created: add.html from function add_product
+Template generation task created: edit.html from function edit_product
+Generated HTML: output/index.html
+Generated HTML: output/add.html
+Generated HTML: output/edit.html
+Copied support file: app.py
+Copied support file: style.css

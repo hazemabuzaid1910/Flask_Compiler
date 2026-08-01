@@ -1,24 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 public class Unary {
     Primary primary;
 
-    public Unary(Primary primary) {
-        this.primary = primary;
+    public Unary(Primary var1) {
+        this.primary = var1;
     }
 
     public Primary getPrimary() {
-        return primary;
+        return this.primary;
     }
 
-    public void setPrimary(Primary primary) {
-        this.primary = primary;
+    public void setPrimary(Primary var1) {
+        this.primary = var1;
     }
 
-    @Override
     public String toString() {
-        return "Unary{" +
-                 primary +
-                '}';
+        return "Unary{" + String.valueOf(this.primary) + "}";
     }
 }

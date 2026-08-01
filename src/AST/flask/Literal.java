@@ -1,46 +1,51 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class Literal implements Atom{
-     private LiteralType type;  // ENUM: STRING, NUMBER, NONE, TRUE, FALSE
+public class Literal implements Atom {
+     private LiteralType type;
      private Object value;
 
-     public Literal(LiteralType type, Object value) {
-          this.type = type;
-          this.value = value;
+     public Literal(LiteralType var1, Object var2) {
+          this.type = var1;
+          this.value = var2;
      }
 
      public LiteralType getType() {
-          return type;
+          return this.type;
      }
 
-     public void setType(LiteralType type) {
-          this.type = type;
+     public void setType(LiteralType var1) {
+          this.type = var1;
      }
 
      public Object getValue() {
-          return value;
+          return this.value;
      }
 
-     public void setValue(Object value) {
-          this.value = value;
+     public void setValue(Object var1) {
+          this.value = var1;
      }
 
-     @Override
      public String toString() {
-          StringBuilder sb = new StringBuilder();
-          sb.append("Literal{");
-
-          if (type != null) {
-               sb.append("type=").append(type);
+          StringBuilder var1 = new StringBuilder();
+          var1.append("Literal{");
+          if (this.type != null) {
+               var1.append("type=").append(this.type);
           }
 
-          if (value != null) {
-               if (sb.length() > "Literal{".length()) sb.append(", ");
-               sb.append("value=").append(value);
+          if (this.value != null) {
+               if (var1.length() > "Literal{".length()) {
+                    var1.append(", ");
+               }
+
+               var1.append("value=").append(this.value);
           }
 
-          sb.append("}");
-          return sb.toString();
+          var1.append("}");
+          return var1.toString();
      }
-
 }

@@ -1,0 +1,2194 @@
+{
+  "elements": [
+    {
+      "dottedName": {
+        "first": "flask"
+      },
+      "importAliases": [
+        {
+          "name": "Flask"
+        },
+        {
+          "name": "render_template"
+        },
+        {
+          "name": "request"
+        },
+        {
+          "name": "redirect"
+        }
+      ]
+    },
+    {
+      "importKeyword": "import",
+      "importAliases": [
+        {
+          "name": "json"
+        }
+      ]
+    },
+    {
+      "assignmentStatement": {
+        "left": {
+          "left": {
+            "atom": {
+              "value": "app"
+            }
+          }
+        },
+        "right": {
+          "left": {
+            "atom": {
+              "value": "Flask"
+            },
+            "postfixes": [
+              {
+                "argumentList": {
+                  "arguments": [
+                    {
+                      "expression": {
+                        "left": {
+                          "atom": {
+                            "value": "__name__"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "assignmentStatement": {
+        "left": {
+          "left": {
+            "atom": {
+              "value": "DATA_FILE"
+            }
+          }
+        },
+        "right": {
+          "left": {
+            "atom": {
+              "type": "STRING",
+              "value": "products.json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "functionDef": {
+        "func_name": "load_products",
+        "block": {
+          "statements": [
+            {
+              "expression": {
+                "left": {
+                  "atom": {
+                    "value": "open"
+                  },
+                  "postfixes": [
+                    {
+                      "argumentList": {
+                        "arguments": [
+                          {
+                            "expression": {
+                              "left": {
+                                "atom": {
+                                  "value": "DATA_FILE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "expression": {
+                              "left": {
+                                "atom": {
+                                  "type": "STRING",
+                                  "value": "r"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "name": "file",
+              "block": {
+                "statements": [
+                  {
+                    "returnStatement": {
+                      "expression": {
+                        "left": {
+                          "atom": {
+                            "value": "json"
+                          },
+                          "postfixes": [
+                            {
+                              "value": "load"
+                            },
+                            {
+                              "argumentList": {
+                                "arguments": [
+                                  {
+                                    "expression": {
+                                      "left": {
+                                        "atom": {
+                                          "value": "file"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "functionDef": {
+        "func_name": "save_products",
+        "parameterList": {
+          "parameters": [
+            {
+              "parameter": "products"
+            }
+          ]
+        },
+        "block": {
+          "statements": [
+            {
+              "expression": {
+                "left": {
+                  "atom": {
+                    "value": "open"
+                  },
+                  "postfixes": [
+                    {
+                      "argumentList": {
+                        "arguments": [
+                          {
+                            "expression": {
+                              "left": {
+                                "atom": {
+                                  "value": "DATA_FILE"
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "expression": {
+                              "left": {
+                                "atom": {
+                                  "type": "STRING",
+                                  "value": "w"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "name": "file",
+              "block": {
+                "statements": [
+                  {
+                    "expression": {
+                      "left": {
+                        "atom": {
+                          "value": "json"
+                        },
+                        "postfixes": [
+                          {
+                            "value": "dump"
+                          },
+                          {
+                            "argumentList": {
+                              "arguments": [
+                                {
+                                  "expression": {
+                                    "left": {
+                                      "atom": {
+                                        "value": "products"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "expression": {
+                                    "left": {
+                                      "atom": {
+                                        "value": "file"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "identifier": "indent",
+                                  "expression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "NUMBER",
+                                        "value": 2
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "decoratorStatement": {
+        "decorators": {
+          "dottedName": {
+            "first": "app",
+            "rest": [
+              "route"
+            ]
+          },
+          "argumentList": {
+            "arguments": [
+              {
+                "expression": {
+                  "left": {
+                    "atom": {
+                      "type": "STRING",
+                      "value": "/"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "functionDef": {
+          "func_name": "home",
+          "block": {
+            "statements": [
+              {
+                "assignmentStatement": {
+                  "left": {
+                    "left": {
+                      "atom": {
+                        "value": "products"
+                      }
+                    }
+                  },
+                  "right": {
+                    "left": {
+                      "atom": {
+                        "value": "load_products"
+                      },
+                      "postfixes": [
+                        {}
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "returnStatement": {
+                  "expression": {
+                    "left": {
+                      "atom": {
+                        "value": "render_template"
+                      },
+                      "postfixes": [
+                        {
+                          "argumentList": {
+                            "arguments": [
+                              {
+                                "expression": {
+                                  "left": {
+                                    "atom": {
+                                      "type": "STRING",
+                                      "value": "index.html"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "identifier": "products",
+                                "expression": {
+                                  "left": {
+                                    "atom": {
+                                      "value": "products"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "htmlNode": {
+                    "htmlContents": [
+                      {
+                        "htmlTag": {
+                          "tagName": {
+                            "tagName": "html"
+                          },
+                          "htmlContents": [
+                            {
+                              "htmlTag": {
+                                "tagName": {
+                                  "tagName": "head"
+                                },
+                                "htmlContents": [
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "title"
+                                      },
+                                      "htmlContents": [
+                                        {
+                                          "text": [
+                                            "Products"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "link"
+                                      },
+                                      "htmlAttributes": [
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "rel"
+                                          },
+                                          "attributeValue": {
+                                            "value": "stylesheet",
+                                            "type": "STRING"
+                                          }
+                                        },
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "href"
+                                          },
+                                          "attributeValue": {
+                                            "value": "style.css",
+                                            "type": "STRING"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "htmlTag": {
+                                "tagName": {
+                                  "tagName": "body"
+                                },
+                                "htmlAttributes": [
+                                  {
+                                    "attributeKey": {
+                                      "attributeKey": "class"
+                                    },
+                                    "attributeValue": {
+                                      "value": "page",
+                                      "type": "STRING"
+                                    }
+                                  }
+                                ],
+                                "htmlContents": [
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "div"
+                                      },
+                                      "htmlAttributes": [
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "class"
+                                          },
+                                          "attributeValue": {
+                                            "value": "products-container",
+                                            "type": "STRING"
+                                          }
+                                        }
+                                      ],
+                                      "htmlContents": [
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "h1"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "class"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "page-title",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "text": [
+                                                  "ProductsList"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "a"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "href"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "/add",
+                                                  "type": "STRING"
+                                                }
+                                              },
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "class"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "add-btn",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "text": [
+                                                  "AddNewProduct"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "div"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "class"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "products-grid",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "loopVariable": "product",
+                                                "iterableName": "products",
+                                                "htmlContents": [
+                                                  {
+                                                    "htmlTag": {
+                                                      "tagName": {
+                                                        "tagName": "div"
+                                                      },
+                                                      "htmlAttributes": [
+                                                        {
+                                                          "attributeKey": {
+                                                            "attributeKey": "class"
+                                                          },
+                                                          "attributeValue": {
+                                                            "value": "product-card",
+                                                            "type": "STRING"
+                                                          }
+                                                        }
+                                                      ],
+                                                      "htmlContents": [
+                                                        {
+                                                          "htmlTag": {
+                                                            "tagName": {
+                                                              "tagName": "img"
+                                                            },
+                                                            "htmlAttributes": [
+                                                              {
+                                                                "attributeKey": {
+                                                                  "attributeKey": "src"
+                                                                },
+                                                                "attributeValue": {
+                                                                  "value": "\"{{ product.image }}\""
+                                                                }
+                                                              },
+                                                              {
+                                                                "attributeKey": {
+                                                                  "attributeKey": "class"
+                                                                },
+                                                                "attributeValue": {
+                                                                  "value": "product-card-image",
+                                                                  "type": "STRING"
+                                                                }
+                                                              }
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "htmlTag": {
+                                                            "tagName": {
+                                                              "tagName": "h3"
+                                                            },
+                                                            "htmlAttributes": [
+                                                              {
+                                                                "attributeKey": {
+                                                                  "attributeKey": "class"
+                                                                },
+                                                                "attributeValue": {
+                                                                  "value": "product-name",
+                                                                  "type": "STRING"
+                                                                }
+                                                              }
+                                                            ],
+                                                            "htmlContents": [
+                                                              {
+                                                                "jinjaExpression": {
+                                                                  "dottedName": {
+                                                                    "first": "product",
+                                                                    "rest": [
+                                                                      "name"
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              }
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "htmlTag": {
+                                                            "tagName": {
+                                                              "tagName": "p"
+                                                            },
+                                                            "htmlAttributes": [
+                                                              {
+                                                                "attributeKey": {
+                                                                  "attributeKey": "class"
+                                                                },
+                                                                "attributeValue": {
+                                                                  "value": "product-price",
+                                                                  "type": "STRING"
+                                                                }
+                                                              }
+                                                            ],
+                                                            "htmlContents": [
+                                                              {
+                                                                "text": [
+                                                                  "$"
+                                                                ]
+                                                              },
+                                                              {
+                                                                "jinjaExpression": {
+                                                                  "dottedName": {
+                                                                    "first": "product",
+                                                                    "rest": [
+                                                                      "price"
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              }
+                                                            ]
+                                                          }
+                                                        },
+                                                        {
+                                                          "htmlTag": {
+                                                            "tagName": {
+                                                              "tagName": "div"
+                                                            },
+                                                            "htmlAttributes": [
+                                                              {
+                                                                "attributeKey": {
+                                                                  "attributeKey": "class"
+                                                                },
+                                                                "attributeValue": {
+                                                                  "value": "actions",
+                                                                  "type": "STRING"
+                                                                }
+                                                              }
+                                                            ],
+                                                            "htmlContents": [
+                                                              {
+                                                                "htmlTag": {
+                                                                  "tagName": {
+                                                                    "tagName": "a"
+                                                                  },
+                                                                  "htmlAttributes": [
+                                                                    {
+                                                                      "attributeKey": {
+                                                                        "attributeKey": "href"
+                                                                      },
+                                                                      "attributeValue": {
+                                                                        "value": "\"/edit/{{ product.id }}\""
+                                                                      }
+                                                                    },
+                                                                    {
+                                                                      "attributeKey": {
+                                                                        "attributeKey": "class"
+                                                                      },
+                                                                      "attributeValue": {
+                                                                        "value": "edit-btn",
+                                                                        "type": "STRING"
+                                                                      }
+                                                                    }
+                                                                  ],
+                                                                  "htmlContents": [
+                                                                    {
+                                                                      "text": [
+                                                                        "Edit"
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              },
+                                                              {
+                                                                "htmlTag": {
+                                                                  "tagName": {
+                                                                    "tagName": "a"
+                                                                  },
+                                                                  "htmlAttributes": [
+                                                                    {
+                                                                      "attributeKey": {
+                                                                        "attributeKey": "href"
+                                                                      },
+                                                                      "attributeValue": {
+                                                                        "value": "\"/delete/{{ product.id }}\""
+                                                                      }
+                                                                    },
+                                                                    {
+                                                                      "attributeKey": {
+                                                                        "attributeKey": "class"
+                                                                      },
+                                                                      "attributeValue": {
+                                                                        "value": "delete-btn",
+                                                                        "type": "STRING"
+                                                                      }
+                                                                    }
+                                                                  ],
+                                                                  "htmlContents": [
+                                                                    {
+                                                                      "text": [
+                                                                        "Delete"
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              }
+                                                            ]
+                                                          }
+                                                        }
+                                                      ]
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "templatePath": "index.html"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "decoratorStatement": {
+        "decorators": {
+          "dottedName": {
+            "first": "app",
+            "rest": [
+              "route"
+            ]
+          },
+          "argumentList": {
+            "arguments": [
+              {
+                "expression": {
+                  "left": {
+                    "atom": {
+                      "type": "STRING",
+                      "value": "/add"
+                    }
+                  }
+                }
+              },
+              {
+                "identifier": "methods"
+              }
+            ]
+          }
+        },
+        "functionDef": {
+          "func_name": "add_product",
+          "block": {
+            "statements": [
+              {
+                "ifStatement": {
+                  "expression": {
+                    "left": {
+                      "left": {
+                        "atom": {
+                          "value": "request"
+                        },
+                        "postfixes": [
+                          {
+                            "value": "method"
+                          }
+                        ]
+                      }
+                    },
+                    "operator": "\u003d\u003d",
+                    "right": {
+                      "left": {
+                        "atom": {
+                          "type": "STRING",
+                          "value": "POST"
+                        }
+                      }
+                    }
+                  },
+                  "block": {
+                    "statements": [
+                      {
+                        "assignmentStatement": {
+                          "left": {
+                            "left": {
+                              "atom": {
+                                "value": "products"
+                              }
+                            }
+                          },
+                          "right": {
+                            "left": {
+                              "atom": {
+                                "value": "load_products"
+                              },
+                              "postfixes": [
+                                {}
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "assignmentStatement": {
+                          "left": {
+                            "left": {
+                              "atom": {
+                                "value": "new_product"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "expression": {
+                          "left": {
+                            "atom": {
+                              "value": "products"
+                            },
+                            "postfixes": [
+                              {
+                                "value": "append"
+                              },
+                              {
+                                "argumentList": {
+                                  "arguments": [
+                                    {
+                                      "expression": {
+                                        "left": {
+                                          "atom": {
+                                            "value": "new_product"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "expression": {
+                          "left": {
+                            "atom": {
+                              "value": "save_products"
+                            },
+                            "postfixes": [
+                              {
+                                "argumentList": {
+                                  "arguments": [
+                                    {
+                                      "expression": {
+                                        "left": {
+                                          "atom": {
+                                            "value": "products"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "returnStatement": {
+                          "expression": {
+                            "left": {
+                              "atom": {
+                                "value": "redirect"
+                              },
+                              "postfixes": [
+                                {
+                                  "argumentList": {
+                                    "arguments": [
+                                      {
+                                        "expression": {
+                                          "left": {
+                                            "atom": {
+                                              "type": "STRING",
+                                              "value": "/"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "returnStatement": {
+                  "expression": {
+                    "left": {
+                      "atom": {
+                        "value": "render_template"
+                      },
+                      "postfixes": [
+                        {
+                          "argumentList": {
+                            "arguments": [
+                              {
+                                "expression": {
+                                  "left": {
+                                    "atom": {
+                                      "type": "STRING",
+                                      "value": "add.html"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "htmlNode": {
+                    "htmlContents": [
+                      {
+                        "htmlTag": {
+                          "tagName": {
+                            "tagName": "html"
+                          },
+                          "htmlContents": [
+                            {
+                              "htmlTag": {
+                                "tagName": {
+                                  "tagName": "head"
+                                },
+                                "htmlContents": [
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "title"
+                                      },
+                                      "htmlContents": [
+                                        {
+                                          "text": [
+                                            "AddProduct"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "htmlTag": {
+                                "tagName": {
+                                  "tagName": "body"
+                                },
+                                "htmlAttributes": [
+                                  {
+                                    "attributeKey": {
+                                      "attributeKey": "style"
+                                    },
+                                    "attributeValue": {
+                                      "value": "font-family: Arial; text-align:center;",
+                                      "type": "STRING"
+                                    }
+                                  }
+                                ],
+                                "htmlContents": [
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "h1"
+                                      },
+                                      "htmlContents": [
+                                        {
+                                          "text": [
+                                            "AddProduct"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "form"
+                                      },
+                                      "htmlAttributes": [
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "method"
+                                          },
+                                          "attributeValue": {
+                                            "value": "POST",
+                                            "type": "STRING"
+                                          }
+                                        }
+                                      ],
+                                      "htmlContents": [
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "input"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "name"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "name",
+                                                  "type": "STRING"
+                                                }
+                                              },
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "placeholder"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "Product Name",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "br"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "input"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "name"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "price",
+                                                  "type": "STRING"
+                                                }
+                                              },
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "placeholder"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "Price",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "br"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "input"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "name"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "image",
+                                                  "type": "STRING"
+                                                }
+                                              },
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "placeholder"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "Image URL",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "br"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "button"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "type"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "submit",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "text": [
+                                                  "Add"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "br"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "a"
+                                      },
+                                      "htmlAttributes": [
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "href"
+                                          },
+                                          "attributeValue": {
+                                            "value": "/",
+                                            "type": "STRING"
+                                          }
+                                        }
+                                      ],
+                                      "htmlContents": [
+                                        {
+                                          "text": [
+                                            "Back"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "templatePath": "add.html"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "decoratorStatement": {
+        "decorators": {
+          "dottedName": {
+            "first": "app",
+            "rest": [
+              "route"
+            ]
+          },
+          "argumentList": {
+            "arguments": [
+              {
+                "expression": {
+                  "left": {
+                    "atom": {
+                      "type": "STRING",
+                      "value": "/delete/\u003cint:product_id\u003e"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "functionDef": {
+          "func_name": "delete_product",
+          "parameterList": {
+            "parameters": [
+              {
+                "parameter": "product_id"
+              }
+            ]
+          },
+          "block": {
+            "statements": [
+              {
+                "assignmentStatement": {
+                  "left": {
+                    "left": {
+                      "atom": {
+                        "value": "products"
+                      }
+                    }
+                  },
+                  "right": {
+                    "left": {
+                      "atom": {
+                        "value": "load_products"
+                      },
+                      "postfixes": [
+                        {}
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "assignmentStatement": {
+                  "left": {
+                    "left": {
+                      "atom": {
+                        "value": "products"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "expression": {
+                  "left": {
+                    "atom": {
+                      "value": "save_products"
+                    },
+                    "postfixes": [
+                      {
+                        "argumentList": {
+                          "arguments": [
+                            {
+                              "expression": {
+                                "left": {
+                                  "atom": {
+                                    "value": "products"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "returnStatement": {
+                  "expression": {
+                    "left": {
+                      "atom": {
+                        "value": "redirect"
+                      },
+                      "postfixes": [
+                        {
+                          "argumentList": {
+                            "arguments": [
+                              {
+                                "expression": {
+                                  "left": {
+                                    "atom": {
+                                      "type": "STRING",
+                                      "value": "/"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "decoratorStatement": {
+        "decorators": {
+          "dottedName": {
+            "first": "app",
+            "rest": [
+              "route"
+            ]
+          },
+          "argumentList": {
+            "arguments": [
+              {
+                "expression": {
+                  "left": {
+                    "atom": {
+                      "type": "STRING",
+                      "value": "/edit/\u003cint:product_id\u003e"
+                    }
+                  }
+                }
+              },
+              {
+                "identifier": "methods"
+              }
+            ]
+          }
+        },
+        "functionDef": {
+          "func_name": "edit_product",
+          "parameterList": {
+            "parameters": [
+              {
+                "parameter": "product_id"
+              }
+            ]
+          },
+          "block": {
+            "statements": [
+              {
+                "assignmentStatement": {
+                  "left": {
+                    "left": {
+                      "atom": {
+                        "value": "products"
+                      }
+                    }
+                  },
+                  "right": {
+                    "left": {
+                      "atom": {
+                        "value": "load_products"
+                      },
+                      "postfixes": [
+                        {}
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "assignmentStatement": {
+                  "left": {
+                    "left": {
+                      "atom": {
+                        "value": "product"
+                      }
+                    }
+                  },
+                  "right": {
+                    "left": {
+                      "atom": {
+                        "type": "NONE"
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "forStatement": {
+                  "objectName": "p",
+                  "expression": {
+                    "left": {
+                      "atom": {
+                        "value": "products"
+                      }
+                    }
+                  },
+                  "block": {
+                    "statements": [
+                      {
+                        "ifStatement": {
+                          "expression": {
+                            "left": {
+                              "left": {
+                                "atom": {
+                                  "value": "p"
+                                },
+                                "postfixes": [
+                                  {
+                                    "indexExpression": {
+                                      "left": {
+                                        "atom": {
+                                          "type": "STRING",
+                                          "value": "id"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "operator": "\u003d\u003d",
+                            "right": {
+                              "left": {
+                                "atom": {
+                                  "value": "product_id"
+                                }
+                              }
+                            }
+                          },
+                          "block": {
+                            "statements": [
+                              {
+                                "assignmentStatement": {
+                                  "left": {
+                                    "left": {
+                                      "atom": {
+                                        "value": "product"
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "left": {
+                                      "atom": {
+                                        "value": "p"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "ifStatement": {
+                  "expression": {
+                    "left": {
+                      "left": {
+                        "atom": {
+                          "value": "request"
+                        },
+                        "postfixes": [
+                          {
+                            "value": "method"
+                          }
+                        ]
+                      }
+                    },
+                    "operator": "\u003d\u003d",
+                    "right": {
+                      "left": {
+                        "atom": {
+                          "type": "STRING",
+                          "value": "POST"
+                        }
+                      }
+                    }
+                  },
+                  "block": {
+                    "statements": [
+                      {
+                        "assignmentStatement": {
+                          "left": {
+                            "left": {
+                              "atom": {
+                                "value": "product"
+                              },
+                              "postfixes": [
+                                {
+                                  "indexExpression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "STRING",
+                                        "value": "name"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "right": {
+                            "left": {
+                              "atom": {
+                                "value": "request"
+                              },
+                              "postfixes": [
+                                {
+                                  "value": "form"
+                                },
+                                {
+                                  "indexExpression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "STRING",
+                                        "value": "name"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "assignmentStatement": {
+                          "left": {
+                            "left": {
+                              "atom": {
+                                "value": "product"
+                              },
+                              "postfixes": [
+                                {
+                                  "indexExpression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "STRING",
+                                        "value": "price"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "right": {
+                            "left": {
+                              "atom": {
+                                "value": "request"
+                              },
+                              "postfixes": [
+                                {
+                                  "value": "form"
+                                },
+                                {
+                                  "indexExpression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "STRING",
+                                        "value": "price"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "assignmentStatement": {
+                          "left": {
+                            "left": {
+                              "atom": {
+                                "value": "product"
+                              },
+                              "postfixes": [
+                                {
+                                  "indexExpression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "STRING",
+                                        "value": "image"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "right": {
+                            "left": {
+                              "atom": {
+                                "value": "request"
+                              },
+                              "postfixes": [
+                                {
+                                  "value": "form"
+                                },
+                                {
+                                  "indexExpression": {
+                                    "left": {
+                                      "atom": {
+                                        "type": "STRING",
+                                        "value": "image"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "expression": {
+                          "left": {
+                            "atom": {
+                              "value": "save_products"
+                            },
+                            "postfixes": [
+                              {
+                                "argumentList": {
+                                  "arguments": [
+                                    {
+                                      "expression": {
+                                        "left": {
+                                          "atom": {
+                                            "value": "products"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "returnStatement": {
+                          "expression": {
+                            "left": {
+                              "atom": {
+                                "value": "redirect"
+                              },
+                              "postfixes": [
+                                {
+                                  "argumentList": {
+                                    "arguments": [
+                                      {
+                                        "expression": {
+                                          "left": {
+                                            "atom": {
+                                              "type": "STRING",
+                                              "value": "/"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "returnStatement": {
+                  "expression": {
+                    "left": {
+                      "atom": {
+                        "value": "render_template"
+                      },
+                      "postfixes": [
+                        {
+                          "argumentList": {
+                            "arguments": [
+                              {
+                                "expression": {
+                                  "left": {
+                                    "atom": {
+                                      "type": "STRING",
+                                      "value": "edit.html"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "identifier": "product",
+                                "expression": {
+                                  "left": {
+                                    "atom": {
+                                      "value": "product"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "htmlNode": {
+                    "htmlContents": [
+                      {
+                        "htmlTag": {
+                          "tagName": {
+                            "tagName": "html"
+                          },
+                          "htmlContents": [
+                            {
+                              "htmlTag": {
+                                "tagName": {
+                                  "tagName": "head"
+                                },
+                                "htmlContents": [
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "title"
+                                      },
+                                      "htmlContents": [
+                                        {
+                                          "text": [
+                                            "EditProduct"
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "link"
+                                      },
+                                      "htmlAttributes": [
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "rel"
+                                          },
+                                          "attributeValue": {
+                                            "value": "stylesheet",
+                                            "type": "STRING"
+                                          }
+                                        },
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "href"
+                                          },
+                                          "attributeValue": {
+                                            "value": "style.css",
+                                            "type": "STRING"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            {
+                              "htmlTag": {
+                                "tagName": {
+                                  "tagName": "body"
+                                },
+                                "htmlAttributes": [
+                                  {
+                                    "attributeKey": {
+                                      "attributeKey": "class"
+                                    },
+                                    "attributeValue": {
+                                      "value": "page",
+                                      "type": "STRING"
+                                    }
+                                  }
+                                ],
+                                "htmlContents": [
+                                  {
+                                    "htmlTag": {
+                                      "tagName": {
+                                        "tagName": "div"
+                                      },
+                                      "htmlAttributes": [
+                                        {
+                                          "attributeKey": {
+                                            "attributeKey": "class"
+                                          },
+                                          "attributeValue": {
+                                            "value": "container",
+                                            "type": "STRING"
+                                          }
+                                        }
+                                      ],
+                                      "htmlContents": [
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "h1"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "class"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "page-title",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "text": [
+                                                  "EditProduct"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "form"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "method"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "POST",
+                                                  "type": "STRING"
+                                                }
+                                              },
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "class"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "edit-form",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "htmlTag": {
+                                                  "tagName": {
+                                                    "tagName": "img"
+                                                  },
+                                                  "htmlAttributes": [
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "src"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "\"{{product.image}}\""
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "class"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "product-image",
+                                                        "type": "STRING"
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "htmlTag": {
+                                                  "tagName": {
+                                                    "tagName": "input"
+                                                  },
+                                                  "htmlAttributes": [
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "name"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "name",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "value"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "\"{{ product.name }}\""
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "class"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "input-field",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "placeholder"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "Product Name",
+                                                        "type": "STRING"
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "htmlTag": {
+                                                  "tagName": {
+                                                    "tagName": "input"
+                                                  },
+                                                  "htmlAttributes": [
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "name"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "price",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "value"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "\"{{ product.price }}\""
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "class"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "input-field",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "placeholder"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "Price",
+                                                        "type": "STRING"
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "htmlTag": {
+                                                  "tagName": {
+                                                    "tagName": "input"
+                                                  },
+                                                  "htmlAttributes": [
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "name"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "image",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "value"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "\"{{ product.image }}\""
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "class"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "input-field",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "placeholder"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "Image URL",
+                                                        "type": "STRING"
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "htmlTag": {
+                                                  "tagName": {
+                                                    "tagName": "button"
+                                                  },
+                                                  "htmlAttributes": [
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "type"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "submit",
+                                                        "type": "STRING"
+                                                      }
+                                                    },
+                                                    {
+                                                      "attributeKey": {
+                                                        "attributeKey": "class"
+                                                      },
+                                                      "attributeValue": {
+                                                        "value": "save-btn",
+                                                        "type": "STRING"
+                                                      }
+                                                    }
+                                                  ],
+                                                  "htmlContents": [
+                                                    {
+                                                      "text": [
+                                                        "SaveChanges"
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        {
+                                          "htmlTag": {
+                                            "tagName": {
+                                              "tagName": "a"
+                                            },
+                                            "htmlAttributes": [
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "href"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "/",
+                                                  "type": "STRING"
+                                                }
+                                              },
+                                              {
+                                                "attributeKey": {
+                                                  "attributeKey": "class"
+                                                },
+                                                "attributeValue": {
+                                                  "value": "back-link",
+                                                  "type": "STRING"
+                                                }
+                                              }
+                                            ],
+                                            "htmlContents": [
+                                              {
+                                                "text": [
+                                                  "Back"
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  "templatePath": "edit.html"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ifStatement": {
+        "expression": {
+          "left": {
+            "left": {
+              "atom": {
+                "value": "__name__"
+              }
+            }
+          },
+          "operator": "\u003d\u003d",
+          "right": {
+            "left": {
+              "atom": {
+                "type": "STRING",
+                "value": "__main__"
+              }
+            }
+          }
+        },
+        "block": {
+          "statements": [
+            {
+              "expression": {
+                "left": {
+                  "atom": {
+                    "value": "app"
+                  },
+                  "postfixes": [
+                    {
+                      "value": "run"
+                    },
+                    {
+                      "argumentList": {
+                        "arguments": [
+                          {
+                            "identifier": "debug",
+                            "expression": {
+                              "left": {
+                                "atom": {
+                                  "type": "TRUE",
+                                  "value": true
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

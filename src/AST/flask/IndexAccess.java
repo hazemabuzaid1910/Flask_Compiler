@@ -1,20 +1,22 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-// في AST/flask/IndexAccess.java
-// في ملف Postfix/IndexAccess.java (أو حيث توجد كلاسات Postfix)
 public class IndexAccess implements Postfix {
     private Expression indexExpression;
 
-    public IndexAccess(Expression indexExpression) {
-        this.indexExpression = indexExpression;
+    public IndexAccess(Expression var1) {
+        this.indexExpression = var1;
     }
 
     public Expression getIndexExpression() {
-        return indexExpression;
+        return this.indexExpression;
     }
 
-    @Override
     public String toString() {
-        return "IndexAccess[" + indexExpression + "]";
+        return "IndexAccess[" + String.valueOf(this.indexExpression) + "]";
     }
 }

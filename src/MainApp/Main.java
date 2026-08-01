@@ -1,9 +1,11 @@
 package MainApp;
 
 import AST.flask.Program;
-import SymbolTable.E2_symbolTable;
 import antler.FlaskLexer;
 import antler.FlaskParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import generator.Generator;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -11,9 +13,13 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import Visitor.Visitor;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static Utils.assetsMethode.removeEmpty;
 
 public class Main {
     public static List<Symantic_Error> errors = new ArrayList<>();
@@ -57,21 +63,33 @@ public class Main {
         // زيارة الشجرة باستخدام Visitor
         // ================================
         Visitor visitor = new Visitor();
-        visitor.setTemplatesDir(
-                Paths.get("project", "templates")
-                        .toAbsolutePath()
-                        .toString()
-        );
         Program programAst = (Program) visitor.visit(tree);
 
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
+        JsonElement root = gson.toJsonTree(programAst);
+
+        removeEmpty(root);
+
+        String json = gson.toJson(root);
+
+        Files.createDirectories(Paths.get("compiler_output"));
+
+        Files.writeString(
+                Paths.get("compiler_output", "ast_python.json"),
+                json,
+                StandardCharsets.UTF_8
+        );
         semanticError.check_Errors();
         // ================================
         // طباعة AST الناتجة
         // ================================
         System.out.println("========== AST ==========");
         System.out.print(programAst);
-        Generator generator =
-                new Generator();
+      Generator generator =
+        new Generator();
 
         generator.generate(programAst);
         semanticError = new check_Symantic_Error() ;

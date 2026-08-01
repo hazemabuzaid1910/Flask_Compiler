@@ -1,26 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class StmtFunction implements Statement{
+public class StmtFunction implements Statement {
     FunctionDef functionDef;
 
-    public StmtFunction(FunctionDef functionDef) {
-        this.functionDef = functionDef;
+    public StmtFunction(FunctionDef var1) {
+        this.functionDef = var1;
     }
 
     public FunctionDef getFunctionDef() {
-        return functionDef;
+        return this.functionDef;
     }
 
-    public void setFunctionDef(FunctionDef functionDef) {
-        this.functionDef = functionDef;
+    public void setFunctionDef(FunctionDef var1) {
+        this.functionDef = var1;
     }
 
-    @Override
     public String toString() {
-        if (functionDef == null) {
-            return "StmtFunction{}";
-        }
-        return "\n  " + functionDef + "\n";
+        return  "StmtFunction{:"  +"\n  " + (this.functionDef) + "\n}";
     }
-
 }

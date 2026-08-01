@@ -1,32 +1,36 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class Program {
-    private List<Object> elements; // يمكن أن تكون Statement أو BlankLines
+    private List<Object> elements;
 
-    public Program(List<Object> elements) {
-        this.elements = elements;
+    public Program(List<Object> var1) {
+        this.elements = var1;
     }
 
     public List<Object> getElements() {
-        return elements;
+        return this.elements;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Program {\n");
+        StringBuilder var1 = new StringBuilder("Program {\n");
+        if (this.elements != null) {
+            Iterator var2 = this.elements.iterator();
 
-        if (elements != null) {
-            for (Object element : elements) {
-                // إضافة مسافة بادئة (indentation) لجعل الشكل مرتباً
-                sb.append("  ").append(element.toString()).append("\n");
+            while(var2.hasNext()) {
+                Object var3 = var2.next();
+                var1.append("  ").append(var3.toString()).append("\n");
             }
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
-
 }

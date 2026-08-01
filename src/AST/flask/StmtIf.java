@@ -1,25 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class StmtIf implements Statement{
+public class StmtIf implements Statement {
     IfStatement ifStatement;
 
-    public StmtIf(IfStatement ifStatement) {
-        this.ifStatement = ifStatement;
+    public StmtIf(IfStatement var1) {
+        this.ifStatement = var1;
     }
 
     public IfStatement getIfStatement() {
-        return ifStatement;
+        return this.ifStatement;
     }
 
-    public void setIfStatement(IfStatement ifStatement) {
-        this.ifStatement = ifStatement;
+    public void setIfStatement(IfStatement var1) {
+        this.ifStatement = var1;
     }
 
-    @Override
     public String toString() {
-        if (ifStatement == null) {
-            return "StmtIf{}";
-        }
-        return "StmtIf{\n  " + ifStatement + "\n}";
+        return this.ifStatement == null ? "StmtIf{}" : "StmtIf{\n  " + String.valueOf(this.ifStatement) + "\n}";
     }
 }

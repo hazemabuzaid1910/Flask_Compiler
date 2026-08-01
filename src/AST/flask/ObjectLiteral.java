@@ -1,33 +1,35 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 import java.util.List;
 
-public class ObjectLiteral implements Atom{
+public class ObjectLiteral implements Atom {
     List<Pair> pairList;
 
-    public ObjectLiteral(List<Pair> pairList) {
-        this.pairList = pairList;
+    public ObjectLiteral(List<Pair> var1) {
+        this.pairList = var1;
     }
 
     public List<Pair> getPairList() {
-        return pairList;
+        return this.pairList;
     }
 
-    public void setPairList(List<Pair> pairList) {
-        this.pairList = pairList;
+    public void setPairList(List<Pair> var1) {
+        this.pairList = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ObjectLiteral{\n\t\t");
-
-        if (pairList != null && !pairList.isEmpty()) {
-            sb.append("pairList=").append(pairList);
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ObjectLiteral{\n\t\t");
+        if (this.pairList != null && !this.pairList.isEmpty()) {
+            var1.append("pairList=").append(this.pairList);
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

@@ -1,49 +1,53 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class PostfixMember implements Postfix{
+public class PostfixMember implements Postfix {
     String dot;
     String identifier;
 
-    public PostfixMember(String dot, String identifier) {
-        this.dot = dot;
-        this.identifier = identifier;
+    public PostfixMember(String var1, String var2) {
+        this.dot = var1;
+        this.identifier = var2;
     }
 
     public String getDot() {
-        return dot;
+        return this.dot;
     }
 
-    public void setDot(String dot) {
-        this.dot = dot;
+    public void setDot(String var1) {
+        this.dot = var1;
     }
 
     public String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setIdentifier(String var1) {
+        this.identifier = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PostfixMember{");
-
-        boolean hasPrevious = false;
-
-        if (dot != null) {
-            sb.append("dot='").append(dot).append("'");
-            hasPrevious = true;
+        StringBuilder var1 = new StringBuilder();
+        var1.append("PostfixMember{");
+        boolean var2 = false;
+        if (this.dot != null) {
+            var1.append("dot='").append(this.dot).append("'");
+            var2 = true;
         }
 
-        if (identifier != null) {
-            if (hasPrevious) sb.append(", ");
-            sb.append("identifier='").append(identifier).append("'");
+        if (this.identifier != null) {
+            if (var2) {
+                var1.append(", ");
+            }
+
+            var1.append("identifier='").append(this.identifier).append("'");
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

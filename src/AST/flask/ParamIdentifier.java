@@ -1,31 +1,33 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class ParamIdentifier implements ParameterFunction{
+public class ParamIdentifier implements ParameterFunction {
     String parameter;
 
-    public ParamIdentifier(String parameter) {
-        this.parameter = parameter;
+    public ParamIdentifier(String var1) {
+        this.parameter = var1;
     }
 
     public String getParameter() {
-        return parameter;
+        return this.parameter;
     }
 
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
+    public void setParameter(String var1) {
+        this.parameter = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ParamIdentifier{");
-
-        if (parameter != null) {
-            sb.append("parameter='").append(parameter).append("'");
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ParamIdentifier{");
+        if (this.parameter != null) {
+            var1.append("parameter='").append(this.parameter).append("'");
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

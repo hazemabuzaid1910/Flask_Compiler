@@ -1,50 +1,60 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class WithStatement implements Statement{
+public class WithStatement implements Statement {
     Expression expression;
     String name;
     Block block;
 
-    public WithStatement( Expression expression, String name, Block block) {
-        this.expression = expression;
-
-        this.name = name;
-        this.block = block;
+    public WithStatement(Expression var1, String var2, Block var3) {
+        this.expression = var1;
+        this.name = var2;
+        this.block = var3;
     }
 
     public Expression getExpression() {
-        return expression;
+        return this.expression;
     }
 
-    public void setExpression(Expression expression) {
-        this.expression = expression;
+    public void setExpression(Expression var1) {
+        this.expression = var1;
     }
-
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String var1) {
+        this.name = var1;
     }
 
     public Block getBlock() {
-        return block;
+        return this.block;
     }
 
-    public void setBlock(Block block) {
-        this.block = block;
+    public void setBlock(Block var1) {
+        this.block = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("WithStatement{");
-        if (expression != null) sb.append("\n  expression=").append(expression);
-        if (name != null) sb.append(",\n  name='").append(name).append('\'');
-        if (block != null) sb.append(",\n  block=").append(block);
-        sb.append("\n}");
-        return sb.toString();
-    }
+        StringBuilder var1 = new StringBuilder("WithStatement{");
+        if (this.expression != null) {
+            var1.append("\n  expression=").append(this.expression);
+        }
 
+        if (this.name != null) {
+            var1.append(",\n  name='").append(this.name).append('\'');
+        }
+
+        if (this.block != null) {
+            var1.append(",\n  block=").append(this.block);
+        }
+
+        var1.append("\n}");
+        return var1.toString();
+    }
 }

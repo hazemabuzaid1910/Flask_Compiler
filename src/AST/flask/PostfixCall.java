@@ -1,31 +1,28 @@
 package AST.flask;
 
-public class PostfixCall implements Postfix{
+public class PostfixCall implements Postfix {
     ArgumentList argumentList;
 
-    public PostfixCall(ArgumentList argumentList) {
-        this.argumentList = argumentList;
+    public PostfixCall(ArgumentList var1) {
+        this.argumentList = var1;
     }
 
     public ArgumentList getArgumentList() {
-        return argumentList;
+        return this.argumentList;
     }
 
-    public void setArgumentList(ArgumentList argumentList) {
-        this.argumentList = argumentList;
+    public void setArgumentList(ArgumentList var1) {
+        this.argumentList = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PostfixCall{");
-
-        if (argumentList != null) {
-            sb.append("argumentList=").append(argumentList);
+        StringBuilder var1 = new StringBuilder();
+        var1.append("PostfixCall{");
+        if (this.argumentList != null) {
+            var1.append("argumentList=").append(this.argumentList);
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

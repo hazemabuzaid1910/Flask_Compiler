@@ -1,4 +1,4 @@
-// Generated from C:/Users/hazem/OneDrive/Desktop/4/minmax/Compiler/src/antler/FlaskParser.g4 by ANTLR 4.13.2
+// Generated from C:/Users/hazem/OneDrive/Desktop/Flask_compiler2/Flask_Compiler/src/antler/FlaskParser.g4 by ANTLR 4.13.2
 package antler;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -192,95 +192,23 @@ public interface FlaskParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpression(FlaskParser.ExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link FlaskParser#comparison}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitComparison(FlaskParser.ComparisonContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link FlaskParser#logicalOr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogicalOr(FlaskParser.LogicalOrContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link FlaskParser#logicalAnd}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLogicalAnd(FlaskParser.LogicalAndContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link FlaskParser#additive}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAdditive(FlaskParser.AdditiveContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link FlaskParser#multiplicative}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMultiplicative(FlaskParser.MultiplicativeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link FlaskParser#unary}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnary(FlaskParser.UnaryContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link FlaskParser#compOp}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCompOp(FlaskParser.CompOpContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link FlaskParser#primary}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPrimary(FlaskParser.PrimaryContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code IdentifierAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
+	 * Visit a parse tree produced by {@link FlaskParser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIdentifierAtom(FlaskParser.IdentifierAtomContext ctx);
+	T visitAtom(FlaskParser.AtomContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code LiteralAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
+	 * Visit a parse tree produced by {@link FlaskParser#compOp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLiteralAtom(FlaskParser.LiteralAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ParenAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParenAtom(FlaskParser.ParenAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ObjectAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitObjectAtom(FlaskParser.ObjectAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ArrayAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayAtom(FlaskParser.ArrayAtomContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code ListComprehensionAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitListComprehensionAtom(FlaskParser.ListComprehensionAtomContext ctx);
+	T visitCompOp(FlaskParser.CompOpContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code MemberAccess}
 	 * labeled alternative in {@link FlaskParser#postfix}.

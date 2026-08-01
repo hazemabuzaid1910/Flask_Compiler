@@ -6,7 +6,7 @@
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/antler/FlaskParser.g4" />
           <option name="autoGen" value="true" />
-          <option name="outputDir" value="C:\Users\hazem\OneDrive\Desktop\4\minmax\Compiler\src" />
+          <option name="outputDir" value="C:\Users\hazem\OneDrive\Desktop\Flask_compiler2\Flask_Compiler\src" />
           <option name="libDir" value="" />
           <option name="encoding" value="" />
           <option name="pkg" value="" />

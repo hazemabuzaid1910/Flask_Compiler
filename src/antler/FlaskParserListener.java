@@ -1,4 +1,4 @@
-// Generated from C:/Users/hazem/OneDrive/Desktop/4/minmax/Compiler/src/antler/FlaskParser.g4 by ANTLR 4.13.2
+// Generated from C:/Users/hazem/OneDrive/Desktop/Flask_compiler2/Flask_Compiler/src/antler/FlaskParser.g4 by ANTLR 4.13.2
 package antler;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -314,76 +314,6 @@ public interface FlaskParserListener extends ParseTreeListener {
 	 */
 	void exitExpression(FlaskParser.ExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FlaskParser#comparison}.
-	 * @param ctx the parse tree
-	 */
-	void enterComparison(FlaskParser.ComparisonContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#comparison}.
-	 * @param ctx the parse tree
-	 */
-	void exitComparison(FlaskParser.ComparisonContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FlaskParser#logicalOr}.
-	 * @param ctx the parse tree
-	 */
-	void enterLogicalOr(FlaskParser.LogicalOrContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#logicalOr}.
-	 * @param ctx the parse tree
-	 */
-	void exitLogicalOr(FlaskParser.LogicalOrContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FlaskParser#logicalAnd}.
-	 * @param ctx the parse tree
-	 */
-	void enterLogicalAnd(FlaskParser.LogicalAndContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#logicalAnd}.
-	 * @param ctx the parse tree
-	 */
-	void exitLogicalAnd(FlaskParser.LogicalAndContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FlaskParser#additive}.
-	 * @param ctx the parse tree
-	 */
-	void enterAdditive(FlaskParser.AdditiveContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#additive}.
-	 * @param ctx the parse tree
-	 */
-	void exitAdditive(FlaskParser.AdditiveContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FlaskParser#multiplicative}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultiplicative(FlaskParser.MultiplicativeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#multiplicative}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultiplicative(FlaskParser.MultiplicativeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FlaskParser#unary}.
-	 * @param ctx the parse tree
-	 */
-	void enterUnary(FlaskParser.UnaryContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#unary}.
-	 * @param ctx the parse tree
-	 */
-	void exitUnary(FlaskParser.UnaryContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FlaskParser#compOp}.
-	 * @param ctx the parse tree
-	 */
-	void enterCompOp(FlaskParser.CompOpContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FlaskParser#compOp}.
-	 * @param ctx the parse tree
-	 */
-	void exitCompOp(FlaskParser.CompOpContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link FlaskParser#primary}.
 	 * @param ctx the parse tree
 	 */
@@ -394,77 +324,25 @@ public interface FlaskParserListener extends ParseTreeListener {
 	 */
 	void exitPrimary(FlaskParser.PrimaryContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code IdentifierAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
+	 * Enter a parse tree produced by {@link FlaskParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterIdentifierAtom(FlaskParser.IdentifierAtomContext ctx);
+	void enterAtom(FlaskParser.AtomContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code IdentifierAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
+	 * Exit a parse tree produced by {@link FlaskParser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitIdentifierAtom(FlaskParser.IdentifierAtomContext ctx);
+	void exitAtom(FlaskParser.AtomContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code LiteralAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
+	 * Enter a parse tree produced by {@link FlaskParser#compOp}.
 	 * @param ctx the parse tree
 	 */
-	void enterLiteralAtom(FlaskParser.LiteralAtomContext ctx);
+	void enterCompOp(FlaskParser.CompOpContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code LiteralAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
+	 * Exit a parse tree produced by {@link FlaskParser#compOp}.
 	 * @param ctx the parse tree
 	 */
-	void exitLiteralAtom(FlaskParser.LiteralAtomContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ParenAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void enterParenAtom(FlaskParser.ParenAtomContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ParenAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void exitParenAtom(FlaskParser.ParenAtomContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ObjectAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void enterObjectAtom(FlaskParser.ObjectAtomContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ObjectAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void exitObjectAtom(FlaskParser.ObjectAtomContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ArrayAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayAtom(FlaskParser.ArrayAtomContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ArrayAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayAtom(FlaskParser.ArrayAtomContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code ListComprehensionAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void enterListComprehensionAtom(FlaskParser.ListComprehensionAtomContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code ListComprehensionAtom}
-	 * labeled alternative in {@link FlaskParser#atom}.
-	 * @param ctx the parse tree
-	 */
-	void exitListComprehensionAtom(FlaskParser.ListComprehensionAtomContext ctx);
+	void exitCompOp(FlaskParser.CompOpContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code MemberAccess}
 	 * labeled alternative in {@link FlaskParser#postfix}.

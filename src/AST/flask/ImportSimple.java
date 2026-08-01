@@ -1,3 +1,8 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 import java.util.List;
@@ -6,45 +11,43 @@ public class ImportSimple implements ImportStatement {
     String importKeyword;
     List<ImportAlias> importAliases;
 
-    public ImportSimple(String importKeyword, List<ImportAlias> importAliases) {
-        this.importKeyword = importKeyword;
-        this.importAliases = importAliases;
+    public ImportSimple(String var1, List<ImportAlias> var2) {
+        this.importKeyword = var1;
+        this.importAliases = var2;
     }
-
-
 
     public String getImportKeyword() {
-        return importKeyword;
+        return this.importKeyword;
     }
 
-    public void setImportKeyword(String importKeyword) {
-        this.importKeyword = importKeyword;
+    public void setImportKeyword(String var1) {
+        this.importKeyword = var1;
     }
 
     public List<ImportAlias> getImportAliases() {
-        return importAliases;
+        return this.importAliases;
     }
 
-    public void setImportAliases(List<ImportAlias> importAliases) {
-        this.importAliases = importAliases;
+    public void setImportAliases(List<ImportAlias> var1) {
+        this.importAliases = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ImportSimple{\n");
-
-        if (importKeyword != null) {
-            sb.append("\t\t_import='").append(importKeyword).append("'");
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ImportSimple{\n");
+        if (this.importKeyword != null) {
+            var1.append("\t\t_import='").append(this.importKeyword).append("'");
         }
 
-        if (importAliases != null && !importAliases.isEmpty()) {
-            if (sb.length() > "ImportSimple{".length()) sb.append(", ");
-            sb.append("\n\t\timportAliases=").append(importAliases);
+        if (this.importAliases != null && !this.importAliases.isEmpty()) {
+            if (var1.length() > "ImportSimple{".length()) {
+                var1.append(", ");
+            }
+
+            var1.append("\n\t\timportAliases=").append(this.importAliases);
         }
 
-        sb.append("\n\t\t}");
-        return sb.toString();
+        var1.append("\n\t\t}");
+        return var1.toString();
     }
-
 }

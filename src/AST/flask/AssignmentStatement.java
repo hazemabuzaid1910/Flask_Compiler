@@ -1,35 +1,46 @@
 package AST.flask;
 
 public class AssignmentStatement {
-    Primary primary;
-    Expression expression;
+    private Expression left;
+    private Expression right;
 
-    public AssignmentStatement(Primary primary, Expression expression) {
-        this.primary = primary;
-        this.expression = expression;
+    public AssignmentStatement(Expression left, Expression right) {
+        this.left = left;
+        this.right = right;
     }
 
-    public Primary getPrimary() {
-        return primary;
+    public Expression getLeft() {
+        return left;
     }
 
-    public void setPrimary(Primary primary) {
-        this.primary = primary;
+    public void setLeft(Expression left) {
+        this.left = left;
     }
 
-    public Expression getExpression() {
-        return expression;
+    public Expression getRight() {
+        return right;
     }
 
-    public void setExpression(Expression expression) {
-        this.expression = expression;
+    public void setRight(Expression right) {
+        this.right = right;
     }
 
     @Override
     public String toString() {
-        return "AssignmentStatement{\n\t\t" +
-                  primary +
-                ", expression=" + expression +
-               "\n\t\t"+ '}';
+        StringBuilder sb = new StringBuilder("AssignmentStatement{");
+
+        if (left != null) {
+            sb.append("left=").append(left);
+        }
+
+        if (right != null) {
+            if (left != null) {
+                sb.append(", ");
+            }
+            sb.append("right=").append(right);
+        }
+
+        sb.append('}');
+        return sb.toString();
     }
 }

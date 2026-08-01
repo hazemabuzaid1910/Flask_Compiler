@@ -1,26 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class StmtReturn implements  Statement{
+public class StmtReturn implements Statement {
     ReturnStatement returnStatement;
 
-    public StmtReturn(ReturnStatement returnStatement) {
-        this.returnStatement = returnStatement;
+    public StmtReturn(ReturnStatement var1) {
+        this.returnStatement = var1;
     }
 
     public ReturnStatement getReturnStatement() {
-        return returnStatement;
+        return this.returnStatement;
     }
 
-    public void setReturnStatement(ReturnStatement returnStatement) {
-        this.returnStatement = returnStatement;
+    public void setReturnStatement(ReturnStatement var1) {
+        this.returnStatement = var1;
     }
 
-    @Override
     public String toString() {
-        if (returnStatement == null) {
-            return "StmtReturn{}";
-        }
-        return " "+returnStatement+" ";
+        return this.returnStatement == null ? "StmtReturn{}" : " " + String.valueOf(this.returnStatement) + " ";
     }
-
 }

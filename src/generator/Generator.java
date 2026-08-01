@@ -17,6 +17,7 @@ public class Generator {
     private final Path repoRoot = Path.of("").toAbsolutePath().normalize();
     private final Path projectDir = repoRoot.resolve("project");
     private final Path outputDir = repoRoot.resolve("output");
+    private final Path templatesDir = outputDir.resolve("templates");
     private final Path compilerOutputDir = repoRoot.resolve("compiler_output");
 
     private final Map<String, Object> globalContext = new LinkedHashMap<>();
@@ -46,6 +47,9 @@ public class Generator {
         }
 
         for (Object element : program.getElements()) {
+            System.out.println(
+                    "PROGRAM ELEMENT = " + element.getClass().getName()
+            );
             if (!(element instanceof Statement stmt)) {
                 continue;
             }
@@ -54,10 +58,19 @@ public class Generator {
                 AssignmentStatement assign = assignStmt.getAssignmentStatement();
                 if (assign == null) continue;
 
-                String leftName = extractPrimaryIdentifier(assign.getPrimary());
+                Expression leftExpression = assign.getLeft();
+
+                Primary leftPrimary = null;
+
+                if (leftExpression != null &&
+                        leftExpression.getLeft() instanceof Primary p) {
+                    leftPrimary = p;
+                }
+
+                String leftName = extractPrimaryIdentifier(leftPrimary);
                 if (leftName == null) continue;
 
-                Object value = evaluateExpression(assign.getExpression(), globalContext);
+                Object value = evaluateExpression(assign.getRight(), globalContext);
                 globalContext.put(leftName, value);
                 log("Captured global variable: " + leftName);
             } else if (stmt instanceof StmtFunction fnStmt) {
@@ -98,8 +111,8 @@ public class Generator {
             if (statement instanceof StmtAssign stmtAssign) {
                 AssignmentStatement assignment = stmtAssign.getAssignmentStatement();
                 if (assignment != null) {
-                    Object value = evaluateExpression(assignment.getExpression(), localContext);
-                    applyAssignment(assignment.getPrimary(), value, localContext);
+                    Object value = evaluateExpression(assignment.getRight(), localContext);
+                    applyAssignment(assignment.getLeft(), value, localContext);
                 }
             } else if (statement instanceof StmtIf stmtIf) {
                 AST.flask.IfStatement ifStatement = stmtIf.getIfStatement();
@@ -135,118 +148,212 @@ public class Generator {
         return null;
     }
 
-    private TemplateTask buildTemplateTask(String functionName, ReturnStatement returnStatement, Map<String, Object> localContext) {
+    private TemplateTask buildTemplateTask(String functionName,
+                                           ReturnStatement returnStatement,
+                                           Map<String, Object> localContext) {
+
         if (returnStatement == null || !returnStatement.hasHtmlTemplate()) {
             return null;
         }
 
-        RenderCallInfo callInfo = extractRenderCallInfo(returnStatement.getExpression(), localContext);
+        RenderCallInfo callInfo =
+                extractRenderCallInfo(returnStatement.getExpression(), localContext);
+
         if (callInfo == null || callInfo.templatePath == null) {
             return null;
         }
 
         for (Map.Entry<String, Object> entry : callInfo.context.entrySet()) {
-            if (entry.getValue() == null) {
-                if ("products".equals(entry.getKey()) && globalContext.get("products_array") instanceof List<?>) {
-                    entry.setValue(globalContext.get("products_array"));
-                } else if ("product".equals(entry.getKey()) && globalContext.get("products_array") instanceof List<?> list && !list.isEmpty()) {
+
+            if ("product".equals(entry.getKey()) && entry.getValue() == null) {
+
+                Object products = localContext.get("products");
+
+                if (!(products instanceof List<?>)) {
+                    products = globalContext.get("products");
+                }
+
+                if (!(products instanceof List<?>)) {
+                    products = globalContext.get("products_array");
+                }
+
+                if (products instanceof List<?> list && !list.isEmpty()) {
                     entry.setValue(list.get(0));
                 }
             }
         }
 
-        return new TemplateTask(functionName, callInfo.templatePath, returnStatement.getHtmlNode(), callInfo.context);
-    }
+        Map<String,Object> finalContext = new LinkedHashMap<>();
 
-    private RenderCallInfo extractRenderCallInfo(Expression expression, Map<String, Object> context) {
-        Primary primary = extractFirstPrimary(expression);
-        if (primary == null || !(primary.getAtom() instanceof IdentifierAtom idAtom)) {
+        finalContext.putAll(globalContext);
+        finalContext.putAll(localContext);
+        finalContext.putAll(callInfo.context);
+        System.out.println("FINAL CONTEXT:");
+        for (Map.Entry<String,Object> e : finalContext.entrySet()) {
+            System.out.println(e.getKey() + " = " + e.getValue());
+        }
+        return new TemplateTask(
+                functionName,
+                callInfo.templatePath,
+                returnStatement.getHtmlNode(),
+                finalContext
+        );
+    }
+    private RenderCallInfo extractRenderCallInfo(
+            Expression expression,
+            Map<String, Object> context
+    ) {
+
+        if (expression == null) {
             return null;
         }
+
+        Object left = expression.getLeft();
+
+        if (!(left instanceof Primary primary)) {
+            return null;
+        }
+
+
+        if (!(primary.getAtom() instanceof IdentifierAtom idAtom)) {
+            return null;
+        }
+
 
         if (!"render_template".equals(idAtom.getValue())) {
             return null;
         }
 
+
         for (Postfix postfix : primary.getPostfixes()) {
-            if (!(postfix instanceof Call call)) continue;
+
+            if (!(postfix instanceof Call call)) {
+                continue;
+            }
+
+
             ArgumentList args = call.getArgumentList();
-            if (args == null || args.getArguments() == null || args.getArguments().isEmpty()) {
+
+            if (args == null ||
+                    args.getArguments() == null ||
+                    args.getArguments().isEmpty()) {
+
                 return null;
             }
 
+
             RenderCallInfo info = new RenderCallInfo();
+
             List<Argument> arguments = args.getArguments();
 
+
+            // أول argument هو اسم القالب
             Argument firstArg = arguments.get(0);
+
             if (firstArg instanceof ArgExpression argExpression) {
-                Object value = evaluateExpression(argExpression.getExpression(), context);
-                info.templatePath = value == null ? null : value.toString();
+
+                Object value =
+                        evaluateExpression(
+                                argExpression.getExpression(),
+                                context
+                        );
+
+                info.templatePath =
+                        value == null ? null : value.toString();
             }
 
+
+            // باقي arguments مثل product=...
             for (int i = 1; i < arguments.size(); i++) {
+
                 Argument argument = arguments.get(i);
+
+
                 if (argument instanceof ArgAssignment assignment) {
-                    Object value = evaluateExpression(assignment.getExpression(), context);
-                    info.context.put(assignment.getIdentifier(), value);
+
+                    Object value =
+                            evaluateExpression(
+                                    assignment.getExpression(),
+                                    context
+                            );
+
+
+                    info.context.put(
+                            assignment.getIdentifier(),
+                            value
+                    );
                 }
             }
+
+
             return info;
         }
+
 
         return null;
     }
 
-    private Primary extractFirstPrimary(Expression expr) {
-        if (expr == null || expr.getComparison() == null) return null;
-        Comparison comparison = expr.getComparison();
-        LogicalOR logicalOR = comparison.getFirst();
-        if (logicalOR == null || logicalOR.getFirst() == null) return null;
-        LogicalAnd logicalAnd = logicalOR.getFirst();
-        if (logicalAnd.getAdditives() == null || logicalAnd.getAdditives().isEmpty()) return null;
-        Additive additive = logicalAnd.getAdditives().get(0);
-        if (additive.getMultiplicatives() == null || additive.getMultiplicatives().isEmpty()) return null;
-        Multiplicative multiplicative = additive.getMultiplicatives().get(0);
-        if (multiplicative.getUnaryList() == null || multiplicative.getUnaryList().isEmpty()) return null;
-        Unary unary = multiplicative.getUnaryList().get(0);
-        return unary.getPrimary();
-    }
 
-    private Object evaluateExpression(Expression expression, Map<String, Object> context) {
-        if (expression == null || expression.getComparison() == null) return null;
+    private Object evaluateExpression(
+            Expression expression,
+            Map<String, Object> context
+    ) {
 
-        Comparison comparison = expression.getComparison();
-        Object result = evaluateLogicalOr(comparison.getFirst(), context);
-
-        if (comparison.getOperators() == null || comparison.getOperators().isEmpty()) {
-            return result;
+        if (expression == null) {
+            return null;
         }
 
-        for (int i = 0; i < comparison.getOperators().size(); i++) {
-            Object right = null;
-            if (comparison.getRest() != null && i < comparison.getRest().size()) {
-                right = evaluateLogicalOr(comparison.getRest().get(i), context);
-            }
 
-            CompOp op = comparison.getOperators().get(i);
-            boolean cmp = compareValues(result, right, op);
-            result = cmp;
+        Object leftValue =
+                evaluateValue(
+                        expression.getLeft(),
+                        context
+                );
+
+
+        // تعبير بسيط مثل:
+        // DATA_FILE
+        // "hello"
+        if (expression.getOperator() == null) {
+            return leftValue;
         }
 
-        return result;
+
+        Object rightValue =
+                evaluateValue(
+                        expression.getRight(),
+                        context
+                );
+
+
+        String op = expression.getOperator();
+
+
+        return switch (op) {
+
+            case "==" ->
+                    Objects.equals(leftValue, rightValue);
+
+            case "!=" ->
+                    !Objects.equals(leftValue, rightValue);
+
+            case "+" ->
+                    applyArithmetic(leftValue, rightValue, op);
+
+            case "-" ->
+                    applyArithmetic(leftValue, rightValue, op);
+
+            case "*" ->
+                    applyArithmetic(leftValue, rightValue, op);
+
+            case "/" ->
+                    applyArithmetic(leftValue, rightValue, op);
+
+            default ->
+                    null;
+        };
     }
 
-    private Object evaluateLogicalOr(LogicalOR logicalOR, Map<String, Object> context) {
-        if (logicalOR == null) return null;
-        Object first = evaluateLogicalAnd(logicalOR.getFirst(), context);
-        if (logicalOR.getRest() == null || logicalOR.getRest().isEmpty()) return first;
-
-        boolean result = isTruthy(first);
-        for (LogicalAnd rest : logicalOR.getRest()) {
-            result = result || isTruthy(evaluateLogicalAnd(rest, context));
-        }
-        return result;
-    }
 
     private Object evaluateLogicalAnd(LogicalAnd logicalAnd, Map<String, Object> context) {
         if (logicalAnd == null || logicalAnd.getAdditives() == null || logicalAnd.getAdditives().isEmpty()) {
@@ -302,14 +409,28 @@ public class Generator {
 
     private Object evaluatePrimary(Primary primary, Map<String, Object> context) {
         if (primary == null) return null;
+        System.out.println(
+                "ATOM = " + primary.getAtom()
+        );
 
+        System.out.println(
+                "POSTFIXES = " + primary.getPostfixes()
+        );
         Object currentValue = evaluateAtom(primary.getAtom(), context);
+        System.out.println("PRIMARY ATOM = " + currentValue);
 
+        System.out.println(
+                "POSTFIX COUNT = " +
+                        (primary.getPostfixes() == null ? "null" : primary.getPostfixes().size())
+        );
         if (primary.getPostfixes() == null) {
             return currentValue;
         }
 
         for (Postfix postfix : primary.getPostfixes()) {
+            System.out.println(
+                    "POSTFIX CLASS = " + postfix.getClass().getName()
+            );
             if (postfix instanceof MemberAccess memberAccess) {
                 String member = memberAccess.getValue();
                 if (currentValue instanceof SymbolName symbolName) {
@@ -322,10 +443,33 @@ public class Generator {
             } else if (postfix instanceof IndexAccess indexAccess) {
                 Object index = evaluateExpression(indexAccess.getIndexExpression(), context);
                 currentValue = resolveIndex(currentValue, index);
-            } else if (postfix instanceof Call call) {
+            }else if (postfix instanceof Call call) {
+
+                System.out.println("ENTER CALL BLOCK");
+
+                System.out.println(
+                        "CURRENT VALUE CLASS = " +
+                                currentValue.getClass().getName()
+                );
+
                 if (currentValue instanceof SymbolName symbolName) {
-                    currentValue = executeCall(symbolName.name, call, context);
+
+                    System.out.println(
+                            "FUNCTION = " + symbolName.name
+                    );
+
+                    currentValue = executeCall(
+                            symbolName.name,
+                            call,
+                            context
+                    );
+
+                    System.out.println(
+                            "CALL RESULT = " + currentValue
+                    );
+
                 } else {
+                    System.out.println("NOT SYMBOL NAME");
                     currentValue = null;
                 }
             }
@@ -378,7 +522,7 @@ public class Generator {
 
     private Object executeCall(String functionName, Call call, Map<String, Object> context) {
         List<Object> args = evaluateCallArguments(call, context);
-
+        System.out.println("EXECUTE CALL = " + functionName);
         if ("len".equals(functionName)) {
             if (!args.isEmpty() && args.get(0) instanceof Collection<?> collection) {
                 return collection.size();
@@ -412,7 +556,7 @@ public class Generator {
             }
             return null;
         }
-
+        System.out.println("AVAILABLE FUNCTIONS = " + functions.keySet());
         FunctionDef functionDef = functions.get(functionName);
         if (functionDef != null) {
             Object direct = executeFunctionDirect(functionDef, new LinkedHashMap<>(context));
@@ -448,13 +592,29 @@ public class Generator {
             if (statement instanceof StmtAssign stmtAssign) {
                 AssignmentStatement assignment = stmtAssign.getAssignmentStatement();
                 if (assignment != null) {
-                    Object value = evaluateExpression(assignment.getExpression(), localContext);
-                    applyAssignment(assignment.getPrimary(), value, localContext);
+                    Object value = evaluateExpression(assignment.getRight(), localContext);
+                    applyAssignment(assignment.getLeft(), value, localContext);
                 }
             } else if (statement instanceof StmtReturn stmtReturn) {
                 ReturnStatement returnStatement = stmtReturn.getReturnStatement();
                 if (returnStatement != null) {
                     return evaluateExpression(returnStatement.getExpression(), localContext);
+                }
+            }
+            else if (statement instanceof StmtWith stmtWith) {
+
+                WithStatement withStatement =
+                        stmtWith.getWithStatement();
+
+                if(withStatement != null){
+
+                    TemplateTask ignored =
+                            executeBlock(
+                                    "",
+                                    withStatement.getBlock(),
+                                    localContext
+                            );
+
                 }
             }
         }
@@ -463,78 +623,171 @@ public class Generator {
     }
 
     private Object resolveIndex(Object value, Object index) {
+
         if (value instanceof Map<?, ?> map) {
             return map.get(index == null ? null : index.toString());
         }
 
         if (value instanceof List<?> list) {
-            if (index instanceof Number number) {
+
+            for(Object item : list){
+
+                if(item instanceof Map<?,?> map){
+
+                    Object objId = map.get("id");
+
+                    if(objId != null && index != null &&
+                            objId.toString().equals(index.toString())){
+                        return item;
+                    }
+                }
+            }
+
+
+            if(index instanceof Number number){
+
                 int i = number.intValue();
-                if (i >= 0 && i < list.size()) return list.get(i);
+
+                if(i >=0 && i < list.size())
+                    return list.get(i);
             }
         }
 
         return null;
     }
 
-    private void applyAssignment(Primary left, Object value, Map<String, Object> localContext) {
-        if (left == null) return;
+    private void applyAssignment(
+            Expression left,
+            Object value,
+            Map<String,Object> localContext
+    ) {
 
-        String baseName = extractPrimaryIdentifier(left);
-        if (baseName == null) return;
+        if (left == null) {
+            return;
+        }
 
-        if (left.getPostfixes() == null || left.getPostfixes().isEmpty()) {
+
+        Primary primary = null;
+
+        if (left.getLeft() instanceof Primary p) {
+            primary = p;
+        }
+
+
+        if (primary == null) {
+            return;
+        }
+
+
+        String baseName = extractPrimaryIdentifier(primary);
+
+        if (baseName == null) {
+            return;
+        }
+
+
+        if (primary.getPostfixes() == null ||
+                primary.getPostfixes().isEmpty()) {
+
             localContext.put(baseName, value);
             return;
         }
 
+
         Object container = localContext.get(baseName);
+
         if (container == null) {
             container = globalContext.get(baseName);
         }
 
+
         if (container == null) {
             localContext.put(baseName, value);
             return;
         }
 
+
         Object current = container;
-        List<Postfix> postfixes = left.getPostfixes();
+
+        List<Postfix> postfixes = primary.getPostfixes();
+
 
         for (int i = 0; i < postfixes.size(); i++) {
+
             Postfix postfix = postfixes.get(i);
+
             boolean last = (i == postfixes.size() - 1);
 
+
             if (postfix instanceof MemberAccess memberAccess) {
+
                 String key = memberAccess.getValue();
+
+
                 if (current instanceof Map<?, ?> mapRaw) {
+
                     @SuppressWarnings("unchecked")
-                    Map<String, Object> map = (Map<String, Object>) mapRaw;
+                    Map<String,Object> map =
+                            (Map<String,Object>) mapRaw;
+
+
                     if (last) {
                         map.put(key, value);
-                    } else {
+                    }
+                    else {
                         current = map.get(key);
                     }
                 }
-            } else if (postfix instanceof IndexAccess indexAccess) {
-                Object keyOrIndex = evaluateExpression(indexAccess.getIndexExpression(), localContext);
+
+            }
+            else if (postfix instanceof IndexAccess indexAccess) {
+
+                Object keyOrIndex =
+                        evaluateExpression(
+                                indexAccess.getIndexExpression(),
+                                localContext
+                        );
+
+
                 if (current instanceof Map<?, ?> mapRaw) {
+
                     @SuppressWarnings("unchecked")
-                    Map<String, Object> map = (Map<String, Object>) mapRaw;
-                    String key = keyOrIndex == null ? null : keyOrIndex.toString();
+                    Map<String,Object> map =
+                            (Map<String,Object>) mapRaw;
+
+
+                    String key =
+                            keyOrIndex == null
+                                    ? null
+                                    : keyOrIndex.toString();
+
+
                     if (last) {
                         map.put(key, value);
-                    } else {
+                    }
+                    else {
                         current = map.get(key);
                     }
-                } else if (current instanceof List<?> listRaw && keyOrIndex instanceof Number number) {
+
+                }
+                else if (current instanceof List<?> listRaw &&
+                        keyOrIndex instanceof Number number) {
+
+
                     @SuppressWarnings("unchecked")
-                    List<Object> list = (List<Object>) listRaw;
+                    List<Object> list =
+                            (List<Object>) listRaw;
+
+
                     int idx = number.intValue();
+
+
                     if (idx >= 0 && idx < list.size()) {
+
                         if (last) {
                             list.set(idx, value);
-                        } else {
+                        }
+                        else {
                             current = list.get(idx);
                         }
                     }
@@ -542,14 +795,21 @@ public class Generator {
             }
         }
 
+
         localContext.put(baseName, container);
     }
 
     private String extractPrimaryIdentifier(Primary primary) {
-        if (primary == null || !(primary.getAtom() instanceof IdentifierAtom identifierAtom)) {
+
+        if (primary == null) {
             return null;
         }
-        return identifierAtom.getValue();
+
+        if (primary.getAtom() instanceof IdentifierAtom identifierAtom) {
+            return identifierAtom.getValue();
+        }
+
+        return null;
     }
 
     private boolean compareValues(Object left, Object right, CompOp op) {
@@ -627,6 +887,7 @@ public class Generator {
 
     private void saveFiles(Program program) throws IOException {
         Files.createDirectories(outputDir);
+        Files.createDirectories(templatesDir);
         Files.createDirectories(compilerOutputDir);
 
         writeGeneratedHtmlFiles();
@@ -644,7 +905,7 @@ public class Generator {
             if (written.contains(normalizedTemplateName)) continue;
 
             String rendered = renderHtmlNode(task.htmlNode, task.context);
-            Files.writeString(outputDir.resolve(normalizedTemplateName), rendered, StandardCharsets.UTF_8);
+            Files.writeString(templatesDir.resolve(normalizedTemplateName), rendered, StandardCharsets.UTF_8);
             written.add(normalizedTemplateName);
             log("Generated HTML: output/" + normalizedTemplateName);
         }
@@ -664,10 +925,7 @@ public class Generator {
     }
 
     private void writeCompilerOutputFiles(Program program) throws IOException {
-        String pythonAstJson = "{\n" +
-                "  \"ast_python\": \"" + escapeJson(program == null ? "" : program.toString()) + "\",\n" +
-                "  \"captured_globals\": " + toJson(globalContext) + "\n" +
-                "}";
+
 
         List<Map<String, String>> jinjaAstEntries = new ArrayList<>();
         for (TemplateTask task : generatedTemplates) {
@@ -685,7 +943,6 @@ public class Generator {
             semanticContent = Files.readString(semanticFile, StandardCharsets.UTF_8);
         }
 
-        Files.writeString(compilerOutputDir.resolve("ast_python.json"), pythonAstJson, StandardCharsets.UTF_8);
         Files.writeString(compilerOutputDir.resolve("ast_jinja.json"), jinjaAstJson, StandardCharsets.UTF_8);
         Files.writeString(compilerOutputDir.resolve("semantic_report.txt"), semanticContent, StandardCharsets.UTF_8);
         Files.writeString(compilerOutputDir.resolve("generation_log.txt"), generationLog.toString(), StandardCharsets.UTF_8);
@@ -695,26 +952,40 @@ public class Generator {
 
     private String renderHtmlNode(HtmlNode node, Map<String, Object> context) {
         if (node == null || node.getHtmlContents() == null) return "";
+
         Deque<Map<String, Object>> scopes = new ArrayDeque<>();
         scopes.push(context == null ? new LinkedHashMap<>() : new LinkedHashMap<>(context));
-        return renderContents(node.getHtmlContents(), scopes);
+
+        return renderContents(node.getHtmlContents(), scopes, 0);
     }
 
-    private String renderContents(List<HtmlContent> contents, Deque<Map<String, Object>> scopes) {
+    private String renderContents(List<HtmlContent> contents,
+                                  Deque<Map<String, Object>> scopes,
+                                  int indent) {
+
         StringBuilder html = new StringBuilder();
+
         for (HtmlContent content : contents) {
-            html.append(renderContent(content, scopes));
+            html.append(renderContent(content, scopes, indent));
+
+            if (content instanceof HtmlElement) {
+                html.append("\n");
+            }
         }
+
         return html.toString();
     }
 
-    private String renderContent(HtmlContent content, Deque<Map<String, Object>> scopes) {
+    private String renderContent(HtmlContent content,
+                                 Deque<Map<String, Object>> scopes,
+                                 int indent) {
         if (content == null) return "";
 
         if (content instanceof HtmlElement element) {
-            return renderHtmlTag(element.getHtmlTag(), scopes);
+            return "\n" +
+                    "    ".repeat(indent) +
+                    renderHtmlTag(element.getHtmlTag(), scopes, indent);
         }
-
         if (content instanceof Text text) {
             if (text.getText() == null) return "";
             return String.join("", text.getText());
@@ -730,6 +1001,10 @@ public class Generator {
         }
 
         if (content instanceof ForBlock forBlock) {
+            System.out.println(
+                    "FOR VARIABLE = "
+                            + forBlock.getIterableName()
+            );
             Object iterable = resolveVariable(forBlock.getIterableName(), scopes);
             if (!(iterable instanceof List<?> list)) return "";
             StringBuilder out = new StringBuilder();
@@ -737,7 +1012,7 @@ public class Generator {
                 Map<String, Object> loopScope = new LinkedHashMap<>();
                 loopScope.put(forBlock.getLoopVariable(), item);
                 scopes.push(loopScope);
-                out.append(renderContents(forBlock.getHtmlContents(), scopes));
+                out.append(renderContents(forBlock.getHtmlContents(), scopes, indent + 1));
                 scopes.pop();
             }
             return out.toString();
@@ -746,23 +1021,24 @@ public class Generator {
         if (content instanceof IfBlock ifBlock) {
             Object condition = resolveVariable(ifBlock.getConditionVariable(), scopes);
             if (isTruthy(condition)) {
-                return renderContents(ifBlock.getHtmlContents(), scopes);
-            }
+                return renderContents(ifBlock.getHtmlContents(), scopes, indent + 1);            }
             return "";
         }
 
         if (content instanceof StatementJinja statementJinja) {
-            return renderContent(statementJinja.getJinjaStatement(), scopes);
+            return renderContent(statementJinja.getJinjaStatement(), scopes, indent);
         }
 
         return "";
     }
 
-    private String renderHtmlTag(HtmlTag tag, Deque<Map<String, Object>> scopes) {
+    private String renderHtmlTag(HtmlTag tag,
+                                 Deque<Map<String, Object>> scopes,
+                                 int indent) {
         if (tag instanceof HtmlPairTag pairTag) {
             String name = pairTag.getHtmlTag().getTagName();
             String attributes = renderAttributes(pairTag.getHtmlAttributes(), scopes);
-            String body = renderContents(pairTag.getHtmlContents(), scopes);
+            String body = renderContents(pairTag.getHtmlContents(), scopes, indent + 1);
             return "<" + name + attributes + ">" + body + "</" + name + ">";
         }
 
@@ -798,7 +1074,10 @@ public class Generator {
             } else {
                 result.append("\"").append(value).append("\"");
             }
+            System.out.println("RAW  = " + rawValue);
+            System.out.println("AFTER= " + value);
         }
+
         return result.toString();
     }
 
@@ -865,7 +1144,16 @@ public class Generator {
     }
 
     private String toJson(Object value) {
-        if (value == null) return "null";
+        return toJson(value, 0);
+    }
+
+    private String toJson(Object value, int indent) {
+        String indentStr = "    ".repeat(indent);
+        String nextIndentStr = "    ".repeat(indent + 1);
+
+        if (value == null) {
+            return "null";
+        }
 
         if (value instanceof String s) {
             return "\"" + escapeJson(s) + "\"";
@@ -876,26 +1164,59 @@ public class Generator {
         }
 
         if (value instanceof Map<?, ?> map) {
-            StringBuilder sb = new StringBuilder("{");
-            boolean first = true;
-            for (Map.Entry<?, ?> entry : map.entrySet()) {
-                if (!first) sb.append(",");
-                first = false;
-                sb.append("\"").append(escapeJson(String.valueOf(entry.getKey()))).append("\":").append(toJson(entry.getValue()));
+            if (map.isEmpty()) {
+                return "{}";
             }
-            sb.append("}");
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("{\n");
+
+            Iterator<? extends Map.Entry<?, ?>> iterator = map.entrySet().iterator();
+
+            while (iterator.hasNext()) {
+                Map.Entry<?, ?> entry = iterator.next();
+
+                sb.append(nextIndentStr)
+                        .append("\"")
+                        .append(escapeJson(String.valueOf(entry.getKey())))
+                        .append("\": ")
+                        .append(toJson(entry.getValue(), indent + 1));
+
+                if (iterator.hasNext()) {
+                    sb.append(",");
+                }
+
+                sb.append("\n");
+            }
+
+            sb.append(indentStr).append("}");
             return sb.toString();
         }
 
         if (value instanceof Collection<?> collection) {
-            StringBuilder sb = new StringBuilder("[");
-            boolean first = true;
-            for (Object item : collection) {
-                if (!first) sb.append(",");
-                first = false;
-                sb.append(toJson(item));
+            if (collection.isEmpty()) {
+                return "[]";
             }
-            sb.append("]");
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("[\n");
+
+            Iterator<?> iterator = collection.iterator();
+
+            while (iterator.hasNext()) {
+                Object item = iterator.next();
+
+                sb.append(nextIndentStr)
+                        .append(toJson(item, indent + 1));
+
+                if (iterator.hasNext()) {
+                    sb.append(",");
+                }
+
+                sb.append("\n");
+            }
+
+            sb.append(indentStr).append("]");
             return sb.toString();
         }
 
@@ -1124,5 +1445,35 @@ public class Generator {
         private boolean peek(char expected) {
             return index < input.length() && input.charAt(index) == expected;
         }
+    }
+    private Object evaluateValue(
+            Object value,
+            Map<String,Object> context
+    ) {
+
+        if (value == null) {
+            return null;
+        }
+
+
+        if (value instanceof Expression expression) {
+
+            return evaluateExpression(
+                    expression,
+                    context
+            );
+        }
+
+
+        if (value instanceof Primary primary) {
+
+            return evaluatePrimary(
+                    primary,
+                    context
+            );
+        }
+
+
+        return value;
     }
 }

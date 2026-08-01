@@ -1,30 +1,63 @@
 package AST.flask;
 
 public class Expression implements Postfix {
-Comparison comparison;
 
-    public Expression(Comparison comparison) {
-        this.comparison = comparison;
+    private Object left;
+    private String operator;
+    private Object right;
+
+
+    // للتعبيرات البسيطة مثل DATA_FILE أو "hello"
+    public Expression(Object left) {
+        this.left = left;
     }
 
-    public Comparison getComparison() {
-        return comparison;
+
+    // للتعبيرات مثل a + b أو a == b
+    public Expression(Object left, String operator, Object right) {
+        this.left = left;
+        this.operator = operator;
+        this.right = right;
     }
 
-    public void setComparison(Comparison comparison) {
-        this.comparison = comparison;
+
+    public Object getLeft() {
+        return left;
     }
+
+
+    public void setLeft(Object left) {
+        this.left = left;
+    }
+
+
+    public String getOperator() {
+        return operator;
+    }
+
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+
+    public Object getRight() {
+        return right;
+    }
+
+
+    public void setRight(Object right) {
+        this.right = right;
+    }
+
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
 
-
-        if (comparison != null) {
-            sb.append(comparison);
+        if(operator != null){
+            return left + " " + operator + " " + right;
         }
 
-        return sb.toString();
+        return left == null ? "" : left.toString();
     }
-
 }

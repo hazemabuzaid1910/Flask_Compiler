@@ -84,55 +84,39 @@ withStatement
 
 // ==================== EXPRESSIONS ====================
 expression
-    : comparison
-    | IDENTIFIER
+    : primary (compOp primary)*
     ;
 
-comparison
-    : logicalOr (compOp logicalOr)*
-    ;
-
-logicalOr
-    : logicalAnd ('or' logicalAnd)*
-    ;
-
-logicalAnd
-    : additive ('and' additive)*
-    ;
-
-additive
-    : multiplicative (('+' | '-') multiplicative)*
-    ;
-
-multiplicative
-    : unary (('*' | '/') unary)*
-    ;
-
-unary
-    : primary
-    ;
-
-compOp
-    : EQEQ
-    | NEQ
-    | LT
-    | GT
-    | LE
-    | GE
-    ;
 
 primary
     : atom postfix*
     ;
 
+
 atom
-    : IDENTIFIER              # IdentifierAtom
-    | literal                 # LiteralAtom
-    | '(' expression ')'      # ParenAtom
-    | objectLiteral           # ObjectAtom
-    | arrayLiteral            # ArrayAtom
-    | listComprehension       # ListComprehensionAtom
+    : IDENTIFIER
+    | literal
+    | '(' expression ')'
+    | arrayLiteral
+    | objectLiteral
+    | listComprehension
     ;
+
+compOp
+    : PLUS
+    | MINUS
+    | MUL
+    | DIV
+    | EQEQ
+    | NEQ
+    | LT
+    | GT
+    | LE
+    | GE
+    | AND
+    | OR
+    ;
+
 
 postfix
     : '.' IDENTIFIER          # MemberAccess

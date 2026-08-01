@@ -1,46 +1,51 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
 public class ImportAlias {
     private String name;
     private String alias;
 
-    public ImportAlias(String name, String alias) {
-        this.name = name;
-        this.alias = alias;
+    public ImportAlias(String var1, String var2) {
+        this.name = var1;
+        this.alias = var2;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String var1) {
+        this.name = var1;
     }
 
     public String getAlias() {
-        return alias;
+        return this.alias;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setAlias(String var1) {
+        this.alias = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ImportAlias{");
-
-        if (name != null) {
-            sb.append("name='").append(name).append("'");
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ImportAlias{");
+        if (this.name != null) {
+            var1.append("name='").append(this.name).append("'");
         }
 
-        if (alias != null) {
-            if (sb.length() > "ImportAlias{".length()) sb.append(", ");
-            sb.append("alias='").append(alias).append("'");
+        if (this.alias != null) {
+            if (var1.length() > "ImportAlias{".length()) {
+                var1.append(", ");
+            }
+
+            var1.append("alias='").append(this.alias).append("'");
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

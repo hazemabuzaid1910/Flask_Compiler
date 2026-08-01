@@ -1,31 +1,33 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class ParamExpression implements  ParameterFunction{
+public class ParamExpression implements ParameterFunction {
     Expression expression;
 
-    public ParamExpression(Expression expression) {
-        this.expression = expression;
+    public ParamExpression(Expression var1) {
+        this.expression = var1;
     }
 
     public Expression getExpression() {
-        return expression;
+        return this.expression;
     }
 
-    public void setExpression(Expression expression) {
-        this.expression = expression;
+    public void setExpression(Expression var1) {
+        this.expression = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ParamExpression{");
-
-        if (expression != null) {
-            sb.append("expression=").append(expression);
+        StringBuilder var1 = new StringBuilder();
+        var1.append("ParamExpression{");
+        if (this.expression != null) {
+            var1.append("expression=").append(this.expression);
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

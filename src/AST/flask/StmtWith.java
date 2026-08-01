@@ -1,26 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class StmtWith implements Statement{
+public class StmtWith implements Statement {
     WithStatement withStatement;
 
-    public StmtWith(WithStatement withStatement) {
-        this.withStatement = withStatement;
+    public StmtWith(WithStatement var1) {
+        this.withStatement = var1;
     }
 
     public WithStatement getWithStatement() {
-        return withStatement;
+        return this.withStatement;
     }
 
-    public void setWithStatement(WithStatement withStatement) {
-        this.withStatement = withStatement;
+    public void setWithStatement(WithStatement var1) {
+        this.withStatement = var1;
     }
 
-    @Override
     public String toString() {
-        if (withStatement == null) {
-            return "StmtWith{}";
-        }
-        return "StmtWith{\n  " + withStatement + "\n}";
+        return this.withStatement == null ? "StmtWith{}" : "StmtWith{\n  " + String.valueOf(this.withStatement) + "\n}";
     }
-
 }

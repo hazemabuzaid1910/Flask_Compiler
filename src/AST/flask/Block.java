@@ -1,39 +1,41 @@
 package AST.flask;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class Block {
     List<Statement> statements;
 
-    public Block(List<Statement> statements) {
-        this.statements = statements;
+    public Block(List<Statement> var1) {
+        this.statements = var1;
     }
 
     public List<Statement> getStatements() {
-        return statements;
+        return this.statements;
     }
 
-    public void setStatements(List<Statement> statements) {
-        this.statements = statements;
+    public void setStatements(List<Statement> var1) {
+        this.statements = var1;
     }
 
-    @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Block{\n");
+        StringBuilder var1 = new StringBuilder();
+        var1.append("Block{\n");
+        if (this.statements != null && !this.statements.isEmpty()) {
+            var1.append("  statements=[\n");
+            Iterator var2 = this.statements.iterator();
 
-        if (statements != null && !statements.isEmpty()) {
-            sb.append("  statements=[\n");
-            for (Object stmt : statements) {
-                if (stmt != null) {
-                    sb.append("    ").append(stmt.toString().replaceAll("(?m)^", "    ")).append("\n");
+            while(var2.hasNext()) {
+                Object var3 = var2.next();
+                if (var3 != null) {
+                    var1.append("    ").append(var3.toString().replaceAll("(?m)^", "    ")).append("\n");
                 }
             }
-            sb.append("  ]\n");
+
+            var1.append("  ]\n");
         }
 
-        sb.append("}");
-        return sb.toString();
+        var1.append("}");
+        return var1.toString();
     }
-
 }

@@ -1,26 +1,26 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
-public class StmtDecorator implements Statement{
+public class StmtDecorator implements Statement {
     DecoratorStatement decoratorStatement;
 
-    public StmtDecorator(DecoratorStatement decoratorStatement) {
-        this.decoratorStatement = decoratorStatement;
+    public StmtDecorator(DecoratorStatement var1) {
+        this.decoratorStatement = var1;
     }
 
     public DecoratorStatement getDecoratorStatement() {
-        return decoratorStatement;
+        return this.decoratorStatement;
     }
 
-    public void setDecoratorStatement(DecoratorStatement decoratorStatement) {
-        this.decoratorStatement = decoratorStatement;
+    public void setDecoratorStatement(DecoratorStatement var1) {
+        this.decoratorStatement = var1;
     }
 
-    @Override
     public String toString() {
-        if (decoratorStatement == null) {
-            return "StmtDecorator{}";
-        }
-        return "StmtDecorator{\n  " + decoratorStatement + "\n}";
+        return this.decoratorStatement == null ? "StmtDecorator{}" : "StmtDecorator{\n  " + String.valueOf(this.decoratorStatement) + "\n}";
     }
-
 }

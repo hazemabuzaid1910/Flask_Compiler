@@ -1,46 +1,60 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package AST.flask;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Primary {
-Atom atom;
-List<Postfix> postfixes;
+    Atom atom;
+    List<Postfix> postfixes;
 
-    public Primary(Atom atom, List<Postfix> postfixes) {
-        this.atom = atom;
-        this.postfixes = postfixes;
+    public Primary(Atom var1, List<Postfix> var2) {
+        this.atom = var1;
+        this.postfixes = var2;
     }
 
     public Atom getAtom() {
-        return atom;
+        return this.atom;
     }
 
-    public void setAtom(Atom atom) {
-        this.atom = atom;
+    public void setAtom(Atom var1) {
+        this.atom = var1;
     }
 
     public List<Postfix> getPostfixes() {
-        return postfixes;
+        return this.postfixes;
     }
 
-    public void setPostfixes(List<Postfix> postfixes) {
-        this.postfixes = postfixes;
+    public void setPostfixes(List<Postfix> var1) {
+        this.postfixes = var1;
     }
+    public void addPostfix(Postfix postfix) {
+        if (postfixes == null) {
+            postfixes = new ArrayList<>();
+        }
 
-    @Override
+        postfixes.add(postfix);
+    }
     public String toString() {
-        StringBuilder sb = new StringBuilder("Primary{");
-
-        if (atom != null) {
-            sb.append("atom=").append(atom);
+        StringBuilder var1 = new StringBuilder("Primary{");
+        if (this.atom != null) {
+            var1.append("atom=").append(this.atom);
         }
 
-        if (postfixes != null && !postfixes.isEmpty()) {
-            if (atom != null) sb.append(", ");
-            sb.append("postfixes=").append(postfixes);
+        if (postfixes != null && !this.postfixes.isEmpty()) {
+            if (this.atom != null) {
+                var1.append(", ");
+                var1.append("postfixes=").append(this.postfixes);
+
+            }
+
         }
 
-        sb.append('}');
-        return sb.toString();
+        var1.append('}');
+        return var1.toString();
     }
 }
